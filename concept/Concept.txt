@@ -1,0 +1,92 @@
+TABLE : 
+    Client : 
+        - idClient
+        - nom
+        - email
+        - mdp
+        - pdp
+        - telephone
+
+    Employe : 
+        - idEmploye
+        - nom
+        - email
+        - mdp
+        - pdp
+        - horaireDebut
+        - horaireFin
+
+    Service : 
+        - idService
+        - description
+        - dureeMinute
+        - prix
+        - commission
+
+    Rdv : 
+        - idRdv
+        - idClient
+        - dateHeureDebut
+        - dateHeureFin
+        - idEmploye
+        - montantTotalPaye
+        - etatFini
+
+    Rdv_Service : 
+        - idRdv
+        - idService
+        - prixNormal
+        - prixApresRemise
+        - montantCommission
+
+    OffreSpeciale : 
+        - idOffreSpeciale
+        - dateDebut
+        - dateFin
+        - idService
+        - pourcentageRemise
+
+    HistoriqueRappel : 
+        - idHistoriqueRappel
+        - idRdv
+        - dateRappel
+
+    Depense : 
+        - description
+        - montant
+        - dateDepense
+
+VUE : 
+    EMPLOYE :
+        1)  * v_SuiviTachesJournalieres : Suivi de taches journaliers
+                select * from rdv where date = now() and fini = true
+            * Commission
+                select idService, sum(montantCommission) from Rdv_Service where idRdv in (v_SuiviTachesJournalieres) group by idService
+
+    MANAGER : 
+        1)  * v_RdvToMinute
+                idRdv | idEmploye | diffrenceEnMinute (dateFin - dateDebut)
+            * v_moyenneHeureEmploye : Temps moyen de travail pour chaque employé
+                idEmploye | count(idEmploye) | sum(diffrenceEnMinute) | sum/count
+        
+        2)  * v_RdvExtracted
+                idRdv | jour | mois | dateDebut | montant
+            * v_ReservationParJour : Le nombre de réservation par jour
+                select jour, mois, count(idRdv) from v_RdvExtracted group by jour, mois
+            * v_ReservationParMois : Le nombre de réservation par mois
+                select mois, count(idRdv) from v_RdvExtracted group by mois
+                 
+        3)  * v_ChiffreAffaireParJour
+                select jour, mois, sum(montant) from v_RdvExtracted group by jour, mois
+            * v_ChiffreAffaireParMois
+                select mois, sum(montant) from v_RdvExtracted group by mois
+
+        4)  * v_DepenseExtracted
+                jour | mois | montant | dateDepense
+            * v_DepenseParMois
+                select mois, sum(montant) from v_DepenseExtracted group by mois
+            * v_BeneficeParMois
+                select CA.mois, (CA.sum - D.sum) as benefice from v_ChiffreAffaireParMois CA join v_DepenseParMois D on CA.mois = D.mois
+
+
+            

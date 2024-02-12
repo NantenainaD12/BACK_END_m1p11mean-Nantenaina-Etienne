@@ -8,5 +8,6 @@ router.route('/client/homepage').get(clientController.homepageClient);
 router.route('/client/logout').get(clientController.logoutClient);
 router.route('/client/login').get(clientController.loginClient);
 router.route('/client/new').post(clientController.createAccountClient);
+router.route('/client/online_booking').post(clientController.onlineAppointmentBooking);
 
 module.exports = router;

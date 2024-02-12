@@ -32,7 +32,7 @@ TABLE :
         - montantTotalPaye
         - etatFini
 
-    Rdv_Services : 
+    RdvServices : 
         - idRdv
         - idService
         - prixNormal

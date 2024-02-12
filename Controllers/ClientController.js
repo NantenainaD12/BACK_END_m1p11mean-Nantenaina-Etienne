@@ -1,4 +1,7 @@
 var ClientModel = require('../Model/Client/ClientModel');
+var ServiceModel = require('../Model/Service/ServiceModel');
+var RdvModel = require('../Model/Rdv/RdvModel');
+var RdvServiceModel = require("../Model/RdvService/RdvServiceModel");
 const getNextSequence = require('../Model/Counter/Counter');
 
 var clientMethods = {
@@ -31,7 +34,7 @@ var clientMethods = {
             res.status(400).send(error);
         }
     },
-    logoutClient: async(req, res) => { // Deconnexion du
+    logoutClient: async(req, res) => {
         if (req.session.client) {
             // Supprimer la session client
             delete req.session.client;
@@ -40,13 +43,13 @@ var clientMethods = {
             res.status(400).send("Erreur lors de la déconnexion");
         }
     },
-    loginClient: async(req, res) => { // Login client
+    loginClient: async(req, res) => {
         res.status(200).send("Login");
     },
-    createAccountClient: async(req, res) => { // S'inscrire
+    createAccountClient: async(req, res) => {
         try {
             var client = new ClientModel({
-                _idClient: await getNextSequence('client'),
+                _idClient: await getNextSequence('clients'),
                 nom: req.body.nom,
                 email: req.body.email,
                 mdp: req.body.mdp,
@@ -62,7 +65,48 @@ var clientMethods = {
             res.status(400).send(error);
         }
     },
+    onlineAppointmentBooking: async(req, res) => {
+        try {
+            var _idRdv = await getNextSequence('rdvs');
+            var idClient = req.session.client._idClient;
+            var dateHeureDebut = new Date(req.body.dateHeureDebut);
+            var idEmploye = req.body.idEmploye;
+            var idServices = req.body.idServices;
+            const services = await ServiceModel.find({ _idService: { $in: idServices } }).exec();
+            var minutes = 0;
+            var montantTotal = 0;
 
+            for (const service of services) {
+                var rdvService = new RdvServiceModel({
+                    idRdv: _idRdv,
+                    idService: service._idService,
+                    prixNormal: service.prix,
+                    prixApresRemise: service.prix,
+                    montantCommission: service.prix * service.commission
+                });
+                // TODO : IF COMPRIS DANS UNE OFFRE SPECIALE : update prixApresRemise and montantCommission
+                minutes += service.dureeMinute;
+                montantTotal += rdvService.prixApresRemise;
+                // var newRdvService = await rdvService.save();
+                console.log("New Rdv => Service : ", rdvService);
+            }
+            const dateHeureFin = new Date(dateHeureDebut.getTime() + (minutes * 60000));
+
+            var rdv = new RdvModel({
+                _idRdv: _idRdv,
+                idClient: idClient,
+                dateHeureDebut: dateHeureDebut,
+                dateHeureFin: dateHeureFin,
+                idEmploye: idEmploye,
+                montantTotalPaye: montantTotal,
+                etatFini: false
+            });
+            res.status(200).send(rdv);
+        } catch (error) {
+            console.error("Erreur lors de la prise de rendez-vous en ligne : ", error);
+            res.status(400).send(error);
+        }
+    }
 };
 
 module.exports = clientMethods;

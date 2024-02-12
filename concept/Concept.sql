@@ -24,3 +24,27 @@ db.clients.insertMany([
         telephone: "0348912643"
     }
 ]);
+
+db.services.insertMany([
+    {
+        _idService: 1,
+        description: "Sourcils",
+        dureeMinute: 15,
+        prix: 25000,
+        commission: 0.05
+    },
+    {
+        _idService: 2,
+        description: "Barbe",
+        dureeMinute: 20,
+        prix: 26000,
+        commission: 0.06
+    },
+    {
+        _idService: 3,
+        description: "Ongle",
+        dureeMinute: 15,
+        prix: 18000,
+        commission: 0.04
+    }
+]);

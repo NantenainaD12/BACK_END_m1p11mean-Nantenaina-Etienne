@@ -1,27 +1,27 @@
 const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var employeeFields = new Schema({
-    _idEmployee:{
+var serviceFields = new Schema({
+    _idService: {
         type: Number,
         required: true
     },
-    nom:{
+    description: {
         type: String,
         required: true
     },
-    prenom: {
-        type: String,
+    dureeMinute: {
+        type: Number,
         required: true
     },
-    email: {
-        type: String,
+    prix: {
+        type: Number,
         required: true
     },
-    salaire: {
+    commission: {
         type: Number,
         required: true
     }
 });
 
-module.exports = mongoose.model('employee',employeeFields);
+module.exports = mongoose.model('services', serviceFields);

@@ -1,5 +1,5 @@
-var EmployeeModel = require('../../Model/Employee/EmployeeModel')
-const getNextSequence = require('../../Model/Counter/Counter'); 
+var EmployeeModel = require('../Model/Employee/EmployeeModel')
+const getNextSequence = require('../Model/Counter/Counter'); 
 const bcrypt = require('bcrypt');
 var Emp_authentification = {
     createEmployee: async(req,res) =>

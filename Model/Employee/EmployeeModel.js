@@ -39,7 +39,6 @@ employeeFields.methods.authenticate = async function (mdp) {
     try {
         // Comparez le mot de passe fourni avec le hachage stocké dans la base de données
         const passwordsMatch = await bcrypt.compare(mdp, this.mdp);
-        console.log("mdp "+mdp+" hache= "+this.mdp+ "valiny= "+passwordsMatch);
         return passwordsMatch;
     } catch (error) {
         console.error('Erreur lors de la comparaison des mots de passe :', error);

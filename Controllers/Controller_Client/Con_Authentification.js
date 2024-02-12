@@ -27,6 +27,7 @@ var Authentification_client = {
     },
     GetAllClients: async(req,res) => {
         try {
+            consol.log('aonaaa');
             const clients = await ClientModel.find();
             res.status(200).send(clients);
         } catch (error) {

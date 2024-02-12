@@ -1,7 +1,8 @@
-const express = require('express')
-const bodyParser = require('body-parser')
+const express = require('express');
+const bodyParser = require('body-parser');
+const session = require('express-session');
 const cors = require('cors');
-const app = express()
+const app = express();
 var routes = require('./routes/routes')
 const mongoose = require('mongoose');
 
@@ -16,6 +17,12 @@ const port = 3001
 app.listen(port, function() {
     console.log(`listening on ${port}`)
 })
+
+app.use(session({
+    secret: 'qhLOPsf6Judsb33T',
+    resave: false,
+    saveUninitialized: false
+}));
 
 
 app.use(cors());

@@ -12,6 +12,10 @@ router.route('/GetAllEmployee').get(Con_Emp_auth.GetAllEmployee);
 
 router.route('/Delete_quote').delete(Authentification_client.DeleteQuotes);
 
-router.route('/client/signIn').post(clientAuthentification.signInClient);
+// CLIENT
+router.route('/client/signin').post(clientAuthentification.signInClient);
+router.route('/client/homepage').get(clientAuthentification.homepageClient);
+router.route('/client/logout').get(clientAuthentification.logoutClient);
+router.route('/client/login').get(clientAuthentification.loginClient);
 
 module.exports = router;

@@ -1,5 +1,5 @@
 TABLE : 
-    Client : 
+    Clients : 
         - idClient
         - nom
         - email
@@ -7,7 +7,7 @@ TABLE :
         - pdp
         - telephone
 
-    Employe : 
+    Employes : 
         - idEmploye
         - nom
         - email
@@ -16,14 +16,14 @@ TABLE :
         - horaireDebut
         - horaireFin
 
-    Service : 
+    Services : 
         - idService
         - description
         - dureeMinute
         - prix
         - commission
 
-    Rdv : 
+    Rdvs : 
         - idRdv
         - idClient
         - dateHeureDebut
@@ -32,26 +32,26 @@ TABLE :
         - montantTotalPaye
         - etatFini
 
-    Rdv_Service : 
+    RdvServices : 
         - idRdv
         - idService
         - prixNormal
         - prixApresRemise
         - montantCommission
 
-    OffreSpeciale : 
+    OffreSpeciales : 
         - idOffreSpeciale
         - dateDebut
         - dateFin
         - idService
         - pourcentageRemise
 
-    HistoriqueRappel : 
+    HistoriqueRappels : 
         - idHistoriqueRappel
         - idRdv
         - dateRappel
 
-    Depense : 
+    Depenses : 
         - description
         - montant
         - dateDepense

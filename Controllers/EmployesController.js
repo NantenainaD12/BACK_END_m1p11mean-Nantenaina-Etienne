@@ -1,12 +1,11 @@
 require('dotenv').config();
 var EmployeeModel = require('../Model/Employee/EmployeeModel')
-const getNextSequence = require('../Model/Tools/Counter'); 
+const getNextSequence = require('../Model/Tools/Counter');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 var Emp_authentification = {
-    createEmployee: async(req,res) =>
-    {
+    createEmployee: async (req, res) => {
         try {
             const nom = req.body.nom;
             const email = req.body.email;
@@ -19,7 +18,7 @@ var Emp_authentification = {
 
             const EmployeeModelData = new EmployeeModel();
             EmployeeModelData.idEmploye = await getNextSequence('Employe'),
-            EmployeeModelData.nom = nom;
+                EmployeeModelData.nom = nom;
             EmployeeModelData.mdp = mdpHashed;
             EmployeeModelData.email = email;
             EmployeeModelData.pdp = pdp;
@@ -30,32 +29,75 @@ var Emp_authentification = {
             await EmployeeModelData.save();
 
             res.status(200).send({
-                "status": true, "message": "mandee"
+                "status": true,
+                "message": "mandee"
             });
-            
+
         } catch (error) {
             console.log(error);
             res.status(400).send(error);
         }
     },
-    GetAllEmployee: async(req,res) => {
+    GetAllEmployee: async (req, res) => {
         try {
             const clients = await EmployeeModel.find();
             res.status(200).send(clients);
         } catch (error) {
-            res.status(500).send({ message: error.message });
+            res.status(500).send({
+                message: error.message
+            });
         }
     },
-    DeleteQuotes: async(req,res) => {
+    updateEmployee: async (req, res) => {
+            try {
+                const idEmploye = req.params.idEmploye; // récupérer le idEmploye du paramètre de la route
+                const nom = req.body.nom;
+                const email = req.body.email;
+                const mdp = req.body.mdp;
+                const pdp = req.body.pdp;
+                const horaireDebut = req.body.horaireDebut;
+                const horaireFin = req.body.horaireFin;
+
+                const mdpHashed = await hashPassword(mdp);
+
+                // trouver l'employé par son idEmploye et mettre à jour ses données
+                await EmployeeModel.findOneAndUpdate({
+                    idEmploye: idEmploye
+                }, {
+                    nom: nom,
+                    mdp: mdpHashed,
+                    email: email,
+                    pdp: pdp,
+                    horaireDebut: horaireDebut,
+                    horaireFin: horaireFin
+                });
+
+                res.status(200).send({
+                    "status": true,
+                    "message": "Profil mis à jour"
+                });
+
+            } catch (error) {
+                console.log(error);
+                res.status(400).send(error);
+            }
+        }
+
+        ,
+    DeleteQuotes: async (req, res) => {
         try {
             const name = req.query.name;
-            await UserModel.deleteOne({ name: name });
+            await UserModel.deleteOne({
+                name: name
+            });
             res.status(200).send({
-                "status": true, 
+                "status": true,
                 "message": "Quote deleted successfully"
             });
         } catch (error) {
-            res.status(500).send({ message: error.message });
+            res.status(500).send({
+                message: error.message
+            });
         }
     },
 
@@ -63,25 +105,40 @@ var Emp_authentification = {
         try {
             const email = req.body.email;
             const mdp = req.body.mdp;
-    
-            const employee = await EmployeeModel.findOne({ email: email });
+
+            const employee = await EmployeeModel.findOne({
+                email: email
+            });
             if (!employee) {
-                return res.status(404).json({ message: 'Employee not found' });
+                return res.status(404).json({
+                    message: 'Employee not found'
+                });
             }
             const isMdptrue = await employee.authenticate(mdp);
             if (!isMdptrue) {
-                return res.status(401).json({ message: 'Incorrect password' });
+                return res.status(401).json({
+                    message: 'Incorrect password'
+                });
             }
-    
+
             // Authentification réussie
             const secret_key = process.env.SECRET_KEY;
-            console.log(secret_key);
-            const token = jwt.sign({ id: employee._id }, secret_key, { expiresIn: '1h' });
-            return res.status(200).json({ message: 'Login successful', employee: employee, token: token });
-       
+            const token = jwt.sign({
+                id: employee._id
+            }, secret_key, {
+                expiresIn: '1h'
+            });
+            return res.status(200).json({
+                message: 'Login successful',
+                employee: employee,
+                token: token
+            });
+
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ message: 'Internal server error' });
+            return res.status(500).json({
+                message: 'Internal server error'
+            });
         }
     }
 }
@@ -99,7 +156,7 @@ async function hashPassword(password) {
 }
 
 // function generateSecretKey(length) {
-   
+
 //     return crypto.randomBytes(length).toString('hex');
 // }
 

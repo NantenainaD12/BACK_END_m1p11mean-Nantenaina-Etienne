@@ -1,5 +1,5 @@
 var ClientModel = require('../../Model/Clients/ClientModel')
-const getNextSequence = require('../../Model/Counter/Counter'); 
+const getNextSequence = require('../../Model/Tools/Counter'); 
 var Authentification_client = {
     createClient: async(req,res) =>
     {

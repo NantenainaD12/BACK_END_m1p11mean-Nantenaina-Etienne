@@ -1,6 +1,9 @@
+require('dotenv').config();
 var EmployeeModel = require('../Model/Employee/EmployeeModel')
-const getNextSequence = require('../Model/Counter/Counter'); 
+const getNextSequence = require('../Model/Tools/Counter'); 
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
 var Emp_authentification = {
     createEmployee: async(req,res) =>
     {
@@ -61,9 +64,6 @@ var Emp_authentification = {
             const email = req.body.email;
             const mdp = req.body.mdp;
     
-            // Votre logique d'authentification ici...
-    
-            // Recherchez l'employé par e-mail
             const employee = await EmployeeModel.findOne({ email: email });
             if (!employee) {
                 return res.status(404).json({ message: 'Employee not found' });
@@ -74,7 +74,11 @@ var Emp_authentification = {
             }
     
             // Authentification réussie
-            return res.status(200).json({ message: 'Login successful', employee: employee });
+            const secret_key = process.env.SECRET_KEY;
+            console.log(secret_key);
+            const token = jwt.sign({ id: employee._id }, secret_key, { expiresIn: '1h' });
+            return res.status(200).json({ message: 'Login successful', employee: employee, token: token });
+       
         } catch (error) {
             console.error(error);
             return res.status(500).json({ message: 'Internal server error' });
@@ -93,5 +97,11 @@ async function hashPassword(password) {
         throw error;
     }
 }
+
+// function generateSecretKey(length) {
+   
+//     return crypto.randomBytes(length).toString('hex');
+// }
+
 
 module.exports = Emp_authentification;

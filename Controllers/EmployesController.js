@@ -48,41 +48,43 @@ var Emp_authentification = {
                 message: error.message
             });
         }
-    },
-    updateEmployee: async (req, res) => {
-            try {
-                const idEmploye = req.params.idEmploye; // récupérer le idEmploye du paramètre de la route
-                const nom = req.body.nom;
-                const email = req.body.email;
-                const mdp = req.body.mdp;
-                const pdp = req.body.pdp;
-                const horaireDebut = req.body.horaireDebut;
-                const horaireFin = req.body.horaireFin;
-
-                const mdpHashed = await hashPassword(mdp);
-
-                // trouver l'employé par son idEmploye et mettre à jour ses données
-                await EmployeeModel.findOneAndUpdate({
-                    idEmploye: idEmploye
-                }, {
+    },updateEmployee: async (req, res) => {
+        try {
+            const idEmploye = req.params.idEmploye; // récupérer le idEmploye du paramètre de la route
+            const nom = req.body.nom;
+            const email = req.body.email;
+            const mdp = req.body.mdp;
+            const pdp = req.body.pdp;
+            const horaireDebut = req.body.horaireDebut;
+            const horaireFin = req.body.horaireFin;
+    
+            const mdpHashed = mdp ? await hashPassword(mdp) : undefined;
+    
+            // trouver l'employé par son idEmploye et mettre à jour ses données
+            const updatedEmployee = await EmployeeModel.findOneAndUpdate({
+                idEmploye: idEmploye
+            }, {
+                $set: {
                     nom: nom,
                     mdp: mdpHashed,
                     email: email,
                     pdp: pdp,
                     horaireDebut: horaireDebut,
                     horaireFin: horaireFin
-                });
-
-                res.status(200).send({
-                    "status": true,
-                    "message": "Profil mis à jour"
-                });
-
-            } catch (error) {
-                console.log(error);
-                res.status(400).send(error);
-            }
-        },
+                }
+            }, { new: true });
+    
+            res.status(200).send({
+                "status": true,
+                "message": "Profil mis à jour",
+                "updatedEmployee": updatedEmployee
+            });
+    
+        } catch (error) {
+            console.log(error);
+            res.status(400).send(error);
+        }
+    },
     DeleteQuotes: async (req, res) => {
         try {
             const name = req.query.name;
@@ -122,9 +124,7 @@ var Emp_authentification = {
 
             // Authentification réussie
             const secret_key = process.env.SECRET_KEY;
-            const token = jwt.sign({
-                id: employee._id
-            }, secret_key, {
+            const token = jwt.sign({id: employee._id}, secret_key, {
                 expiresIn: '1h'
             });
             return res.status(200).json({
@@ -144,6 +144,17 @@ var Emp_authentification = {
         try {
             const idEmploye = req.params.idEmploye;
             const rdvs = await Rdv.getRdvsByIdEmploye(idEmploye);
+            res.status(200).json(rdvs);
+        } catch (error) {
+            res.status(500).send({
+                message: error.message
+            });
+        }
+    },
+    getRdvsByIdEmploye_groupByDAY : async (req, res) => {
+        try {
+            const idEmploye = req.params.idEmploye;
+            const rdvs = await Rdv.getRdvsByIdEmploye_groupByDAY(idEmploye);
             res.status(200).json(rdvs);
         } catch (error) {
             res.status(500).send({

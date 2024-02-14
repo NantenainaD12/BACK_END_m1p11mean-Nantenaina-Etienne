@@ -49,3 +49,19 @@ export class EmployeeService {
 
 
 
+{
+    "$expr": {
+      "$and": [
+        {
+          "$eq": [
+            { "$dateToString": { "format": "%Y-%m-%d", "date": "$dateHeureFin" } },
+            { "$dateToString": { "format": "%Y-%m-%d", "date": new Date() } }
+          ]
+        },
+        {
+          "$eq": [ "$etatFini", true ]
+        }
+      ]
+    }
+  
+}

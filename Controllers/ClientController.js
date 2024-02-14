@@ -2,6 +2,7 @@ var ClientModel = require('../Model/Client/ClientModel');
 var ServiceModel = require('../Model/Service/ServiceModel');
 var RdvModel = require('../Model/Rdv/RdvModel');
 var RdvServiceModel = require("../Model/RdvService/RdvServiceModel");
+var OffreSpecialeModel = require("../Model/OffreSpeciale/OffreSpecialeModel");
 const getNextSequence = require('../Model/Tools/Counter');
 
 var clientMethods = {
@@ -36,7 +37,6 @@ var clientMethods = {
     },
     logoutClient: async(req, res) => {
         if (req.session.client) {
-            // Supprimer la session client
             delete req.session.client;
             res.status(200).send("Compte client deconnecté");
         } else {
@@ -84,11 +84,18 @@ var clientMethods = {
                     prixApresRemise: service.prix,
                     montantCommission: service.prix * service.commission
                 });
-                // TODO : IF COMPRIS DANS UNE OFFRE SPECIALE : update prixApresRemise and montantCommission
+                const offreSpeciales = await OffreSpecialeModel.find({ idService: service._idService }).exec();
+                for (const offreSpeciale of offreSpeciales) {
+                    if (offreSpeciale && offreSpeciale.dateDebut <= dateHeureDebut && dateHeureDebut <= offreSpeciale.dateFin) {
+                        rdvService.idOffreSpeciale = offreSpeciale._idOffreSpeciale;
+                        rdvService.prixApresRemise = service.prix - (service.prix * offreSpeciale.pourcentageRemise);
+                        rdvService.montantCommission = rdvService.prixApresRemise * service.commission;
+                        break;
+                    }
+                }
                 minutes += service.dureeMinute;
                 montantTotal += rdvService.prixApresRemise;
-                // var newRdvService = await rdvService.save();
-                console.log("New Rdv => Service : ", rdvService);
+                await rdvService.save();
             }
             const dateHeureFin = new Date(dateHeureDebut.getTime() + (minutes * 60000));
 
@@ -101,7 +108,8 @@ var clientMethods = {
                 montantTotalPaye: montantTotal,
                 etatFini: false
             });
-            res.status(200).send(rdv);
+            var newRdv = await rdv.save();
+            res.status(200).send(newRdv);
         } catch (error) {
             console.error("Erreur lors de la prise de rendez-vous en ligne : ", error);
             res.status(400).send(error);

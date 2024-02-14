@@ -37,10 +37,12 @@ TABLE :
         - idService
         - prixNormal
         - prixApresRemise
+        - idOffreSpeciale
         - montantCommission
 
     OffreSpeciales : 
         - idOffreSpeciale
+        - description
         - dateDebut
         - dateFin
         - idService

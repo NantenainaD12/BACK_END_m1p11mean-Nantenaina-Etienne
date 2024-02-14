@@ -18,10 +18,14 @@ var rdvServiceFields = new Schema({
         type: Number,
         required: true
     },
+    idOffreSpeciale: {
+        type: Number,
+        required: false
+    },
     montantCommission: {
         type: Number,
         required: true
     }
 });
 
-module.exports = mongoose.model('rdvServices', rdvServiceFields);
+module.exports = mongoose.model('rdvservices', rdvServiceFields);

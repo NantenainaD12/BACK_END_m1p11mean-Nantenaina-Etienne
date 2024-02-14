@@ -2,7 +2,7 @@ var ClientModel = require('../Model/Client/ClientModel');
 var ServiceModel = require('../Model/Service/ServiceModel');
 var RdvModel = require('../Model/Rdv/RdvModel');
 var RdvServiceModel = require("../Model/RdvService/RdvServiceModel");
-const getNextSequence = require('../Model/Counter/Counter');
+const getNextSequence = require('../Model/Tools/Counter');
 
 var clientMethods = {
     signInClient: async(req, res) => {

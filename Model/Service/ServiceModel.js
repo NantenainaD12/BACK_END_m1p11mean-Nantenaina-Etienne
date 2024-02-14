@@ -39,15 +39,5 @@ var serviceFields = new Schema({
         type: Number 
     }
 });
-employeeFields.methods.authenticate = async function (mdp) {
-    try {
-        // Comparez le mot de passe fourni avec le hachage stocké dans la base de données
-        const passwordsMatch = await bcrypt.compare(mdp, this.mdp);
-        return passwordsMatch;
-    } catch (error) {
-        console.error('Erreur lors de la comparaison des mots de passe :', error);
-        throw error;
-    }
-};
 
 module.exports = mongoose.model('services', serviceFields);

@@ -1,6 +1,7 @@
 require('dotenv').config();
 var EmployeeModel = require('../Model/Employee/EmployeeModel')
 const getNextSequence = require('../Model/Tools/Counter');
+const Rdv = require('../Model/Rdv/RdvModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -18,7 +19,7 @@ var Emp_authentification = {
 
             const EmployeeModelData = new EmployeeModel();
             EmployeeModelData.idEmploye = await getNextSequence('Employe'),
-                EmployeeModelData.nom = nom;
+            EmployeeModelData.nom = nom;
             EmployeeModelData.mdp = mdpHashed;
             EmployeeModelData.email = email;
             EmployeeModelData.pdp = pdp;
@@ -81,9 +82,7 @@ var Emp_authentification = {
                 console.log(error);
                 res.status(400).send(error);
             }
-        }
-
-        ,
+        },
     DeleteQuotes: async (req, res) => {
         try {
             const name = req.query.name;
@@ -138,6 +137,17 @@ var Emp_authentification = {
             console.error(error);
             return res.status(500).json({
                 message: 'Internal server error'
+            });
+        }
+    },
+    getRdvsByIdEmploye : async (req, res) => {
+        try {
+            const idEmploye = req.params.idEmploye;
+            const rdvs = await Rdv.getRdvsByIdEmploye(idEmploye);
+            res.status(200).json(rdvs);
+        } catch (error) {
+            res.status(500).send({
+                message: error.message
             });
         }
     }

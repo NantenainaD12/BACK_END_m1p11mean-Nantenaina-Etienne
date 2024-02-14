@@ -32,4 +32,16 @@ var rdvFields = new Schema({
     }
 });
 
-module.exports = mongoose.model('rdvs', rdvFields);
+rdvFields.statics.getRdvsByIdEmploye = async function(idEmploye) {
+    try {
+        const response = await this.find({ salaire : 12.5 });
+        console.log(" id_employe " +idEmploye+ "response = "+ response);
+        return response;
+    } catch (error) {
+        console.error('Erreur lors de la récupération des rendez-vous :', error);
+        throw error;
+    }
+};
+
+const Rdv = mongoose.model('rdvs', rdvFields);
+module.exports = Rdv;

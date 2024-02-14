@@ -1,0 +1,51 @@
+//login cote angular
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+
+@Injectable()
+export class AuthService {
+  constructor(private http: HttpClient) {}
+
+  login(username: string, password: string) {
+    this.http.post('http://your-api-url/login', { username, password })
+      .subscribe((res: any) => {
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('idEmploye', res.employee.idEmploye);
+      });
+  }
+}
+
+}
+
+
+//Appel de fonction apres login
+
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+
+@Injectable()
+export class EmployeeService {
+  constructor(private http: HttpClient) {}
+
+  updateProfile(nom: string, prenom: string, email: string, pdp: string) {
+    const token = localStorage.getItem('token');
+    const idEmploye = localStorage.getItem('idEmploye');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    var updateData = {
+      nom: nom,
+      prenom: prenom,
+      email:email,
+      pdp:pdp
+    };
+
+    this.http.post(`http://your-api-url/user/updateEmployee/${idEmploye}`, updateData, { headers })
+      .subscribe((res: any) => {
+        console.log(res);
+      });
+  }
+}
+
+
+
+

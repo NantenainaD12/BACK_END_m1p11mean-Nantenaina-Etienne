@@ -20,6 +20,10 @@ router.route('/Employe/LoginEmployee').post(Con_Emp_auth.Login_Employee);
 router.route('/Employe/updateEmployee/:idEmploye').post(Con_Emp_auth.updateEmployee);
 router.route('/Employe/GetAllEmployee').get(authenticateToken,Con_Emp_auth.GetAllEmployee);
 
+<<<<<<< HEAD
 >>>>>>> origin/Naintenaina2
+=======
+>>>>>>> Naintenaina2
+>>>>>>> main2
 
 module.exports = router;

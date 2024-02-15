@@ -58,7 +58,7 @@ rdvFields.statics.getRdvsByIdEmploye_groupByDAY = async function (idEmploye) {
 
         const response = await this.find({
             idEmploye: idEmploye,
-            etatFini: true,
+            etatFini: false,
             dateHeureFin: {
                 $gte: startOfDay,
                 $lt: endOfDay

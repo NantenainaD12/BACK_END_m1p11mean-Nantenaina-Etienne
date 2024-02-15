@@ -65,3 +65,84 @@ export class EmployeeService {
     }
   
 }
+
+
+db.createView(
+   "firstYears",
+   "students",
+   [ { $match: { year: 1 } } ]
+)
+
+
+db.createView(
+    "v_suivitachesjournalieres",
+    "rdvs",
+    [
+        {
+            "$match": {
+                "dateHeureDebut": {
+                    "$gte": new Date(new Date().setHours(0,0,0,0))
+                },
+                "etatFini": true
+            }
+        }
+    ]
+)
+
+db.v_suivitachesjournalieres.find()
+
+db.createView(
+    "rdvservices_all_sum",
+    "rdvservices",
+    [
+        {
+            "$group": {
+                "_id": "$idService",
+                "totalCommission": { "$sum": "$montantCommission" }
+            }
+        }
+    ]
+)
+
+db.rdvservices_all_sum.find()
+
+db.rdvservices_all_sum.drop()
+
+
+
+
+
+
+
+rdvFields.statics.getRdvsByIdEmployeAndClient = async function (idEmploye, idClient) {
+    try {
+        // Récupérer les rdvs par idEmploye
+        const rdvs = await this.find({
+            idEmploye: idEmploye,
+            etatFini: false
+        });
+
+        // Sélectionner les idRdv par idClient dans v_suivitachesjournalieres
+        const v_suivitachesjournalieres = db.v_suivitachesjournalieres.find({
+            idClient: idClient
+        });
+
+        // Filtrer les rdvs par les idRdv
+        const filteredRdvs = rdvs.filter(rdv => 
+            v_suivitachesjournalieres.some(v => v.idRdv === rdv._id)
+        );
+
+        // Filtrer rdvservices_all_sum par les idRdv
+        const rdvservices_all_sum = db.rdvservices_all_sum.find();
+        const filteredSum = rdvservices_all_sum.filter(sum => 
+            filteredRdvs.some(rdv => rdv.idService === sum._id)
+        );
+
+        return filteredSum;
+    } catch (error) {
+        console.error('Erreur lors de la récupération des rendez-vous :', error);
+        throw error;
+    }
+};
+
+https://www.bing.com/search?q=Bing+AI&showconv=1&FORM=undexpand

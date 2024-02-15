@@ -10,6 +10,7 @@ router.route('/client/login').get(clientController.loginClient);
 router.route('/client/new').post(clientController.createAccountClient);
 router.route('/client/online_booking').post(clientController.onlineAppointmentBooking);
 router.route('/client/appointement_history').get(clientController.appointmentHistory);
+router.route('/client/employe_preference').get(clientController.employePreference);
 
 var Con_Emp_auth = require ('../Controllers/EmployesController')
 var authenticateToken = require('../Model/Tools/TokenManager');

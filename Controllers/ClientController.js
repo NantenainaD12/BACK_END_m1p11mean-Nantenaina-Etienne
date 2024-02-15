@@ -3,6 +3,7 @@ var ServiceModel = require('../Model/Service/ServiceModel');
 var RdvModel = require('../Model/Rdv/RdvModel');
 var RdvServiceModel = require("../Model/RdvService/RdvServiceModel");
 var OffreSpecialeModel = require("../Model/OffreSpeciale/OffreSpecialeModel");
+var EmployeModel = require("../Model/Employee/EmployeeModel");
 const getNextSequence = require('../Model/Tools/Counter');
 
 var clientMethods = {
@@ -18,7 +19,7 @@ var clientMethods = {
                 res.status(400).send("Client non authentifié");
             }
         } catch (error) {
-            console.log("Erreur lors de l'authentification du client");
+            console.log("Erreur lors de l'authentification du client ", error.message);
             res.status(400).send(error);
         }
     },
@@ -31,7 +32,7 @@ var clientMethods = {
                 res.send('Connectez-vous d\'abord');
             }
         } catch (error) {
-            console.log("Erreur dans la page d'accueil du client");
+            console.log("Erreur dans la page d'accueil du client ", error.message);
             res.status(400).send(error);
         }
     },
@@ -61,7 +62,7 @@ var clientMethods = {
             console.log("Compte client créé avec succès :", newClient);
             res.status(200).send(newClient);
         } catch (error) {
-            console.error("Erreur lors de la création du compte client");
+            console.error("Erreur lors de la création du compte client ", error.message);
             res.status(400).send(error);
         }
     },
@@ -114,7 +115,7 @@ var clientMethods = {
             var newRdv = await rdv.save();
             res.status(200).send(newRdv);
         } catch (error) {
-            console.error("Erreur lors de la prise de rendez-vous en ligne");
+            console.error("Erreur lors de la prise de rendez-vous en ligne ", error.message);
             res.status(400).send(error);
         }
     },
@@ -131,6 +132,22 @@ var clientMethods = {
             res.status(200).send(currentsRdvs);
         } catch (error) {
             console.error("Erreur lors l'historique de de rendez-vous ", error.message);
+            res.status(400).send(error);
+        }
+    },
+    employePreference: async(req, res) => {
+        try {
+            var idClient = req.session.client._idClient;
+            const counts = await RdvModel.aggregate([{$match: {idClient: idClient}}, {$group: {_id: "$idEmploye", count: {$sum: 1}}}, {$sort: {count: -1}}])
+            const employees = [];
+            for (const counter of counts) {
+                const employee = await EmployeModel.findOne({ idEmploye: counter._id });
+                employee.countPreference = counter.count;
+                employees.push(employee);
+            };
+            res.status(200).send(employees);
+        } catch (error) {
+            console.error("Erreur lors la préférence d'employé", error.message);
             res.status(400).send(error);
         }
     }

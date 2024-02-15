@@ -11,14 +11,15 @@ router.route('/client/new').post(clientController.createAccountClient);
 router.route('/client/online_booking').post(clientController.onlineAppointmentBooking);
 router.route('/client/appointement_history').get(clientController.appointmentHistory);
 router.route('/client/employe_preference').get(clientController.employePreference);
+router.route('/client/service_preference').get(clientController.servicePreference);
 
-var Con_Emp_auth = require ('../Controllers/EmployesController')
+var Con_Emp_auth = require('../Controllers/EmployesController')
 var authenticateToken = require('../Model/Tools/TokenManager');
 
 router.route('/Employe/createEmployee').post(Con_Emp_auth.createEmployee);
 router.route('/Employe/LoginEmployee').post(Con_Emp_auth.Login_Employee);
 router.route('/Employe/updateEmployee/:idEmploye').post(Con_Emp_auth.updateEmployee);
-router.route('/Employe/GetAllEmployee').get(authenticateToken,Con_Emp_auth.GetAllEmployee);
+router.route('/Employe/GetAllEmployee').get(authenticateToken, Con_Emp_auth.GetAllEmployee);
 
 
 module.exports = router;

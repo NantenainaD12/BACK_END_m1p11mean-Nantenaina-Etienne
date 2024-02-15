@@ -19,7 +19,7 @@ var clientMethods = {
                 res.status(400).send("Client non authentifié");
             }
         } catch (error) {
-            console.log("Erreur lors de l'authentification du client ", error.message);
+            console.log("Erreur lors de l'authentification du client, ", error.message);
             res.status(400).send(error);
         }
     },
@@ -32,7 +32,7 @@ var clientMethods = {
                 res.send('Connectez-vous d\'abord');
             }
         } catch (error) {
-            console.log("Erreur dans la page d'accueil du client ", error.message);
+            console.log("Erreur dans la page d'accueil du client, ", error.message);
             res.status(400).send(error);
         }
     },
@@ -62,7 +62,7 @@ var clientMethods = {
             console.log("Compte client créé avec succès :", newClient);
             res.status(200).send(newClient);
         } catch (error) {
-            console.error("Erreur lors de la création du compte client ", error.message);
+            console.error("Erreur lors de la création du compte client, ", error.message);
             res.status(400).send(error);
         }
     },
@@ -93,7 +93,7 @@ var clientMethods = {
                 for (const offreSpeciale of offreSpeciales) {
                     if (offreSpeciale && offreSpeciale.dateDebut <= dateHeureDebut && dateHeureDebut <= offreSpeciale.dateFin) {
                         rdvService.idOffreSpeciale = offreSpeciale._idOffreSpeciale;
-                        rdvService.prixApresRemise =  service.prix * (1 - offreSpeciale.pourcentageRemise);
+                        rdvService.prixApresRemise = service.prix * (1 - offreSpeciale.pourcentageRemise);
                         rdvService.montantCommission = rdvService.prixApresRemise * service.commission;
                         break;
                     }
@@ -115,14 +115,14 @@ var clientMethods = {
             var newRdv = await rdv.save();
             res.status(200).send(newRdv);
         } catch (error) {
-            console.error("Erreur lors de la prise de rendez-vous en ligne ", error.message);
+            console.error("Erreur lors de la prise de rendez-vous en ligne, ", error.message);
             res.status(400).send(error);
         }
     },
     appointmentHistory: async(req, res) => {
         try {
             var idClient = req.session.client._idClient;
-            const currentsRdvs = await RdvModel.find({ $and: [{idClient: idClient}, {etatFini: false}] }).sort({ dateHeureDebut: 1 }).exec();
+            const currentsRdvs = await RdvModel.find({ $and: [{ idClient: idClient }, { etatFini: false }] }).sort({ dateHeureDebut: 1 }).exec();
             for (const currentsRdv of currentsRdvs) {
                 currentsRdv.rdvService = await RdvServiceModel.find({ idRdv: currentsRdv._idRdv }).exec();
                 for (const rdvService of currentsRdv.rdvService) {
@@ -131,14 +131,14 @@ var clientMethods = {
             }
             res.status(200).send(currentsRdvs);
         } catch (error) {
-            console.error("Erreur lors l'historique de de rendez-vous ", error.message);
+            console.error("Erreur lors l'historique de de rendez-vous, ", error.message);
             res.status(400).send(error);
         }
     },
     employePreference: async(req, res) => {
         try {
             var idClient = req.session.client._idClient;
-            const counts = await RdvModel.aggregate([{$match: {idClient: idClient}}, {$group: {_id: "$idEmploye", count: {$sum: 1}}}, {$sort: {count: -1}}])
+            const counts = await RdvModel.aggregate([{ $match: { idClient: idClient } }, { $group: { _id: "$idEmploye", count: { $sum: 1 } } }, { $sort: { count: -1 } }])
             const employees = [];
             for (const counter of counts) {
                 const employee = await EmployeModel.findOne({ idEmploye: counter._id });
@@ -147,7 +147,39 @@ var clientMethods = {
             };
             res.status(200).send(employees);
         } catch (error) {
-            console.error("Erreur lors la préférence d'employé", error.message);
+            console.error("Erreur lors la préférence d'employé, ", error.message);
+            res.status(400).send(error);
+        }
+    },
+    servicePreference: async(req, res) => {
+        try {
+            var idClient = req.session.client._idClient;
+            const idrdvs = await RdvModel.find({ idClient: idClient }, { _id: 0, _idRdv: 1 });
+            var idServicesWithCounts = [];
+            for (const idrdv of idrdvs) {
+                const counters = await RdvServiceModel.aggregate([{ $match: { idRdv: idrdv._idRdv } }, { $group: { _id: "$idService", count: { $sum: 1 } } }])
+                idServicesWithCounts.push(counters);
+            }
+            const results = {};
+            for (const subArray of idServicesWithCounts) {
+                for (const element of subArray) {
+                    const id = element._id;
+                    if (!results.hasOwnProperty(id)) {
+                        results[id] = { _id: id, count: 0 };
+                    }
+                    results[id].count += element.count;
+                }
+            }
+            const sortedCounterResults = Object.values(results).sort((a, b) => b.count - a.count);
+            const services = [];
+            for (const counter of sortedCounterResults) {
+                const service = await ServiceModel.findOne({ _idService: counter._id });
+                service.countPreference = counter.count;
+                services.push(service);
+            };
+            res.status(200).send(services);
+        } catch (error) {
+            console.error("Erreur lors la préférence de service, ", error.message);
             res.status(400).send(error);
         }
     }

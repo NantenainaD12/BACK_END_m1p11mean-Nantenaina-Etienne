@@ -9,9 +9,10 @@ router.route('/client/logout').get(clientController.logoutClient);
 router.route('/client/login').get(clientController.loginClient);
 router.route('/client/new').post(clientController.createAccountClient);
 router.route('/client/online_booking').post(clientController.onlineAppointmentBooking);
+router.route('/client/appointement_history').get(clientController.appointmentHistory);
+
 var Con_Emp_auth = require ('../Controllers/EmployesController')
 var authenticateToken = require('../Model/Tools/TokenManager');
-
 
 router.route('/Employe/createEmployee').post(Con_Emp_auth.createEmployee);
 router.route('/Employe/LoginEmployee').post(Con_Emp_auth.Login_Employee);

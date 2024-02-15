@@ -18,7 +18,7 @@ var clientMethods = {
                 res.status(400).send("Client non authentifié");
             }
         } catch (error) {
-            console.log(error);
+            console.log("Erreur lors de l'authentification du client");
             res.status(400).send(error);
         }
     },
@@ -31,7 +31,7 @@ var clientMethods = {
                 res.send('Connectez-vous d\'abord');
             }
         } catch (error) {
-            console.log(error);
+            console.log("Erreur dans la page d'accueil du client");
             res.status(400).send(error);
         }
     },
@@ -61,7 +61,7 @@ var clientMethods = {
             console.log("Compte client créé avec succès :", newClient);
             res.status(200).send(newClient);
         } catch (error) {
-            console.error("Erreur lors de la création du compte client :", error);
+            console.error("Erreur lors de la création du compte client");
             res.status(400).send(error);
         }
     },
@@ -80,7 +80,6 @@ var clientMethods = {
             const services = await ServiceModel.find({ _idService: { $in: idServices } }).exec();
             var minutes = 0;
             var montantTotal = 0;
-
             for (const service of services) {
                 var rdvService = new RdvServiceModel({
                     idRdv: _idRdv,
@@ -103,7 +102,6 @@ var clientMethods = {
                 await rdvService.save();
             }
             const dateHeureFin = new Date(dateHeureDebut.getTime() + (minutes * 60000));
-
             var rdv = new RdvModel({
                 _idRdv: _idRdv,
                 idClient: idClient,
@@ -116,7 +114,23 @@ var clientMethods = {
             var newRdv = await rdv.save();
             res.status(200).send(newRdv);
         } catch (error) {
-            console.error("Erreur lors de la prise de rendez-vous en ligne : ", error);
+            console.error("Erreur lors de la prise de rendez-vous en ligne");
+            res.status(400).send(error);
+        }
+    },
+    appointmentHistory: async(req, res) => {
+        try {
+            var idClient = req.session.client._idClient;
+            const currentsRdvs = await RdvModel.find({ $and: [{idClient: idClient}, {etatFini: false}] }).sort({ dateHeureDebut: 1 }).exec();
+            for (const currentsRdv of currentsRdvs) {
+                currentsRdv.rdvService = await RdvServiceModel.find({ idRdv: currentsRdv._idRdv }).exec();
+                for (const rdvService of currentsRdv.rdvService) {
+                    rdvService.service = await ServiceModel.findOne({ _idService: rdvService.idService }).exec();
+                }
+            }
+            res.status(200).send(currentsRdvs);
+        } catch (error) {
+            console.error("Erreur lors l'historique de de rendez-vous ", error.message);
             res.status(400).send(error);
         }
     }

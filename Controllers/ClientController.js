@@ -131,7 +131,7 @@ var clientMethods = {
             }
             res.status(200).send(currentsRdvs);
         } catch (error) {
-            console.error("Erreur lors l'historique de de rendez-vous, ", error.message);
+            console.error("Erreur lors de l'historique de de rendez-vous, ", error.message);
             res.status(400).send(error);
         }
     },
@@ -147,7 +147,7 @@ var clientMethods = {
             };
             res.status(200).send(employees);
         } catch (error) {
-            console.error("Erreur lors la préférence d'employé, ", error.message);
+            console.error("Erreur lors de la préférence d'employé, ", error.message);
             res.status(400).send(error);
         }
     },
@@ -178,6 +178,33 @@ var clientMethods = {
                 services.push(service);
             };
             res.status(200).send(services);
+        } catch (error) {
+            console.error("Erreur lors de la préférence de service, ", error.message);
+            res.status(400).send(error);
+        }
+    },
+    appointmentReminder: async(req, res) => {
+        try {
+            var idClient = req.session.client._idClient;
+            const myRdvsNotPayed = await RdvModel.find({ idClient: idClient, dateHeureDebut: { $gte: new Date() }, etatFini: false }).sort({ dateHeureDebut: 1 });
+            res.status(200).send(myRdvsNotPayed);
+        } catch (error) {
+            console.error("Erreur lors du rappel des rendez-vous, ", error.message);
+            res.status(400).send(error);
+        }
+    },
+    specialOffersNotifications: async(req, res) => {
+        try {
+            now = new Date();
+            const offreSpeciales = await OffreSpecialeModel.find({}).sort({ dateDebut: 1 });
+            const offers = [];
+            for (const offreSpeciale of offreSpeciales) {
+                if (offreSpeciale.dateDebut <= now && now <= offreSpeciale.dateFin) {
+                    offreSpeciale.service = await ServiceModel.find({ _idService: offreSpeciale.idService });
+                    offers.push(offreSpeciale);
+                }
+            };
+            res.status(200).send(offers);
         } catch (error) {
             console.error("Erreur lors la préférence de service, ", error.message);
             res.status(400).send(error);

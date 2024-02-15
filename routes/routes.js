@@ -8,10 +8,12 @@ router.route('/client/homepage').get(clientController.homepageClient);
 router.route('/client/logout').get(clientController.logoutClient);
 router.route('/client/login').get(clientController.loginClient);
 router.route('/client/new').post(clientController.createAccountClient);
-router.route('/client/online_booking').post(clientController.onlineAppointmentBooking);
-router.route('/client/appointement_history').get(clientController.appointmentHistory);
+router.route('/client/appointment_booking').post(clientController.onlineAppointmentBooking);
+router.route('/client/appointment_history').get(clientController.appointmentHistory);
 router.route('/client/employe_preference').get(clientController.employePreference);
 router.route('/client/service_preference').get(clientController.servicePreference);
+router.route('/client/appointment_reminder').get(clientController.appointmentReminder);
+router.route('/client/special_offers_notifications').get(clientController.specialOffersNotifications);
 
 var Con_Emp_auth = require('../Controllers/EmployesController')
 var authenticateToken = require('../Model/Tools/TokenManager');

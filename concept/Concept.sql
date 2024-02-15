@@ -9,7 +9,7 @@ db.counters.insertMany([
     { _id: 'Employe', __v: 0, seq: 8 },
     { _id: 'clients', __v: 0, seq: 3 },
     { _id: 'services', __v: 0, seq: 3 },
-    { _id: 'offrespeciales', __v: 0, seq: 6 },
+    { _id: 'offrespeciales', __v: 0, seq: 8 },
     { _id: 'rdvservices', __v: 0, seq: 0 },
     { _id: 'rdvs', __v: 0, seq: 0 },
 ]);
@@ -114,5 +114,24 @@ db.offrespeciales.insertMany([
         dateFin: "2024-05-30T00:00:00",
         idService: 3,
         pourcentageRemise: 0.15 
+    }
+]);
+
+db.offrespeciales.insertMany([
+    {
+        _idOffreSpeciale: 1,
+        description: "Feb Manifik",
+        dateDebut: "2024-02-01T00:00:00",
+        dateFin: "2024-01-27T00:00:00",
+        idService: 4,
+        pourcentageRemise: 0.12
+    },
+    {
+        _idOffreSpeciale: 2,
+        description: "new new new 2024",
+        dateDebut: "2024-02-10T00:00:00",
+        dateFin: "2024-02-20T00:00:00",
+        idService: 2,
+        pourcentageRemise: 0.25
     }
 ]);

@@ -67,9 +67,14 @@ var clientMethods = {
     },
     onlineAppointmentBooking: async(req, res) => {
         try {
-            var _idRdv = await getNextSequence('rdvs');
+            var _idRdv = 0;
             var idClient = req.session.client._idClient;
             var dateHeureDebut = new Date(req.body.dateHeureDebut);
+            if (dateHeureDebut.getTime() < new Date().getTime()) {
+                res.status(400).send("Date de début invalide");
+                return;
+            }
+            _idRdv = await getNextSequence('rdvs');
             var idEmploye = req.body.idEmploye;
             var idServices = req.body.idServices;
             const services = await ServiceModel.find({ _idService: { $in: idServices } }).exec();
@@ -88,7 +93,7 @@ var clientMethods = {
                 for (const offreSpeciale of offreSpeciales) {
                     if (offreSpeciale && offreSpeciale.dateDebut <= dateHeureDebut && dateHeureDebut <= offreSpeciale.dateFin) {
                         rdvService.idOffreSpeciale = offreSpeciale._idOffreSpeciale;
-                        rdvService.prixApresRemise = service.prix - (service.prix * offreSpeciale.pourcentageRemise);
+                        rdvService.prixApresRemise =  service.prix * (1 - offreSpeciale.pourcentageRemise);
                         rdvService.montantCommission = rdvService.prixApresRemise * service.commission;
                         break;
                     }

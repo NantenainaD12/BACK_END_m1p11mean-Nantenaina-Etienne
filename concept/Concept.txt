@@ -61,7 +61,7 @@ VUE :
         1)  * v_SuiviTachesJournalieres : Suivi de taches journaliers
                 select * from rdv where date = now() and fini = true
             * Commission
-                select idService, sum(montantCommission) from Rdv_Service where idRdv in (v_SuiviTachesJournalieres) group by idService and idEmploye = 7
+                select idRdv,idService sum(montantCommission) from Rdv_Service where idRdv in (v_SuiviTachesJournalieres) group by idService and idEmploye = 7
 
     MANAGER : 
         1)  * v_RdvToMinute

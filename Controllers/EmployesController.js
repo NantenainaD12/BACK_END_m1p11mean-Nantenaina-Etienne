@@ -161,7 +161,19 @@ var Emp_authentification = {
                 message: error.message
             });
         }
+    },
+    getCommissionByidEmployeeDaily : async (req, res) => {
+        try {
+            const idEmploye = req.params.idEmploye;
+            const rdvs = await Rdv.getCommissionByidEmployeeDaily(idEmploye);
+            res.status(200).json(rdvs);
+        } catch (error) {
+            res.status(500).send({
+                message: error.message
+            });
+        }
     }
+    
 }
 
 async function hashPassword(password) {

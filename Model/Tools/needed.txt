@@ -74,14 +74,23 @@ db.createView(
 )
 
 
+const today = new Date();
+
+// Créer une date avec le début du jour courant (8:00:00 UTC)
+const startOfDay = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 0));
+
+// Créer une date avec la fin du jour courant (22:58:00 UTC)
+const endOfDay = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 23, 58, 0));
+
 db.createView(
     "v_suivitachesjournalieres",
     "rdvs",
     [
         {
             "$match": {
-                "dateHeureDebut": {
-                    "$gte": new Date(new Date().setHours(0,0,0,0))
+                "dateHeureFin": {
+                    "$gte": startOfDay,
+                    "$lt" : endOfDay
                 },
                 "etatFini": true
             }
@@ -89,20 +98,32 @@ db.createView(
     ]
 )
 
+
 db.v_suivitachesjournalieres.find()
+db.v_suivitachesjournalieres.drop()
+
 
 db.createView(
-    "rdvservices_all_sum",
-    "rdvservices",
-    [
+    "rdvservices_all_sum", // Nom de la vue
+    "rdvservices", // Nom de la collection source
+    [ // Pipeline d'agrégation
         {
-            "$group": {
-                "_id": "$idService",
-                "totalCommission": { "$sum": "$montantCommission" }
+            $group: {
+                _id: { idRdv: "$idRdv", idService: "$idService" },
+                totalMontantCommission: { $sum: "$montantCommission" }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                idRdv: "$_id.idRdv",
+                idService: "$_id.idService",
+                totalMontantCommission: 1
             }
         }
     ]
 )
+
 
 db.rdvservices_all_sum.find()
 
@@ -146,3 +167,43 @@ rdvFields.statics.getRdvsByIdEmployeAndClient = async function (idEmploye, idCli
 };
 
 https://www.bing.com/search?q=Bing+AI&showconv=1&FORM=undexpand
+
+
+db.v_suivitachesjournalieres.aggregate([
+    {
+        $match: { idEmploye: 6 } // Remplacez <idEmploye> par l'ID de l'employé que vous voulez rechercher
+    },
+    {
+        $lookup: {
+            from: 'rdvservices_all_sum',
+            let: { idRdv: '$idRdv' },
+            pipeline: [
+                {
+                    $match: {
+                        $expr: {
+                            $eq: ['$idRdv', '$$_idRdv']
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        totalMontantCommission: { $sum: "$totalMontantCommission" }
+                    }
+                }
+            ],
+            as: 'totalMontantCommission'
+        }
+    },
+    {
+        $unwind: {
+            path: '$totalMontantCommission',
+            preserveNullAndEmptyArrays: true
+        }
+    },
+    {
+        $addFields: {
+            totalMontantCommission: '$totalMontantCommission.totalMontantCommission'
+        }
+    }
+])

@@ -20,6 +20,7 @@ router.route('/Employe/updateEmployee/:idEmploye').post(Con_Emp_auth.updateEmplo
 router.route('/Employe/GetAllEmployee').get(authenticateToken,Con_Emp_auth.GetAllEmployee);
 router.route('/Employe/rdvs/:idEmploye').get(authenticateToken,Con_Emp_auth.getRdvsByIdEmploye);
 router.route('/Employe/rdvs_done_daily/:idEmploye').get(Con_Emp_auth.getRdvsByIdEmploye_groupByDAY);
+router.route('/Employe/rdvs_done_daily_with_commission/:idEmploye').get(Con_Emp_auth.getCommissionByidEmployeeDaily);
 
 
 module.exports = router;

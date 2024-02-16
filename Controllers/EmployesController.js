@@ -19,7 +19,7 @@ var Emp_authentification = {
 
             const EmployeeModelData = new EmployeeModel();
             EmployeeModelData.idEmploye = await getNextSequence('Employe'),
-            EmployeeModelData.nom = nom;
+                EmployeeModelData.nom = nom;
             EmployeeModelData.mdp = mdpHashed;
             EmployeeModelData.email = email;
             EmployeeModelData.pdp = pdp;
@@ -48,7 +48,7 @@ var Emp_authentification = {
                 message: error.message
             });
         }
-    },updateEmployee: async (req, res) => {
+    }, updateEmployee: async (req, res) => {
         try {
             const idEmploye = req.params.idEmploye; // récupérer le idEmploye du paramètre de la route
             const nom = req.body.nom;
@@ -57,9 +57,9 @@ var Emp_authentification = {
             const pdp = req.body.pdp;
             const horaireDebut = req.body.horaireDebut;
             const horaireFin = req.body.horaireFin;
-    
+
             const mdpHashed = mdp ? await hashPassword(mdp) : undefined;
-    
+
             // trouver l'employé par son idEmploye et mettre à jour ses données
             const updatedEmployee = await EmployeeModel.findOneAndUpdate({
                 idEmploye: idEmploye
@@ -73,13 +73,13 @@ var Emp_authentification = {
                     horaireFin: horaireFin
                 }
             }, { new: true });
-    
+
             res.status(200).send({
                 "status": true,
                 "message": "Profil mis à jour",
                 "updatedEmployee": updatedEmployee
             });
-    
+
         } catch (error) {
             console.log(error);
             res.status(400).send(error);
@@ -124,7 +124,7 @@ var Emp_authentification = {
 
             // Authentification réussie
             const secret_key = process.env.SECRET_KEY;
-            const token = jwt.sign({id: employee._id}, secret_key, {
+            const token = jwt.sign({ id: employee._id }, secret_key, {
                 expiresIn: '1h'
             });
             return res.status(200).json({
@@ -140,7 +140,7 @@ var Emp_authentification = {
             });
         }
     },
-    getRdvsByIdEmploye : async (req, res) => {
+    getRdvsByIdEmploye: async (req, res) => {
         try {
             const idEmploye = req.params.idEmploye;
             const rdvs = await Rdv.getRdvsByIdEmploye(idEmploye);
@@ -151,10 +151,28 @@ var Emp_authentification = {
             });
         }
     },
-    getRdvsByIdEmploye_groupByDAY : async (req, res) => {
+    // getRdvsDONEByIdEmploye_groupByDAY : async (req, res) => {
+    //     try {
+    //         const idEmploye = req.params.idEmploye;
+    //         const rdvs = await Rdv.getRdvsDONEByIdEmploye_groupByDAY(idEmploye);
+    //         res.status(200).json(rdvs);
+    //     } catch (error) {
+    //         res.status(500).send({
+    //             message: error.message
+    //         });
+    //     }
+    // }
+    getRdvsDONEByIdEmploye_groupByDAY: async (req, res) => {
         try {
             const idEmploye = req.params.idEmploye;
-            const rdvs = await Rdv.getRdvsByIdEmploye_groupByDAY(idEmploye);
+            const startOfDay = new Date(req.body.datedebut);
+            const endOfDay = new Date(req.body.datefin);
+            if (isNaN(startOfDay) || isNaN(endOfDay)) {
+                return res.status(400).send({
+                    message: 'Invalid date format'
+                });
+            }
+            const rdvs = await Rdv.getRdvsDONEByIdEmploye_groupByDAY(idEmploye, startOfDay, endOfDay);
             res.status(200).json(rdvs);
         } catch (error) {
             res.status(500).send({
@@ -162,10 +180,18 @@ var Emp_authentification = {
             });
         }
     },
-    getCommissionByidEmployeeDaily : async (req, res) => {
+    getCommissionByidEmployeeDaily: async (req, res) => {
         try {
-            const idEmploye = req.params.idEmploye;
-            const rdvs = await Rdv.getCommissionByidEmployeeDaily(idEmploye);
+            const idEmploye = req.params.idEmploye;   
+            const startOfDay = req.body.datedebut ? new Date(req.body.datedebut) : new Date();
+            const endOfDay = new Date(req.body.datefin);
+            if (isNaN(startOfDay) || isNaN(endOfDay)) {
+                return res.status(400).send({
+                    message: 'Invalid date format'
+                });
+            }
+            const rdvs = await Rdv.getCommissionByidEmployeeDaily(idEmploye, startOfDay, endOfDay);
+            
             res.status(200).json(rdvs);
         } catch (error) {
             res.status(500).send({
@@ -173,7 +199,7 @@ var Emp_authentification = {
             });
         }
     }
-    
+
 }
 
 async function hashPassword(password) {

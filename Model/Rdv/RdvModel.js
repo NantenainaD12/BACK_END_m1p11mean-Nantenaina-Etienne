@@ -44,23 +44,24 @@ rdvFields.statics.getRdvsByIdEmploye = async function (idEmploye) {
     }
 };
 
-rdvFields.statics.getRdvsByIdEmploye_groupByDAY = async function (idEmploye) {
+
+
+
+rdvFields.statics.getRdvsDONEByIdEmploye_groupByDAY = async function (idEmploye, startOfDay, endOfDay) {
     try {
 
-        const today = new Date();
+        const _startOfDay = new Date(startOfDay);
 
-        // Créer une date avec le début du jour courant (00:00:00)
-        const startOfDay = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
-
-        // Créer une date avec la fin du jour courant (23:59:59)
-        const endOfDay = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 23, 59, 59));
+        const _startOfDay23H = new Date(_startOfDay);
+        _startOfDay23H.setDate(_startOfDay23H.getDate() + 1);
+        _startOfDay23H.setMilliseconds(_startOfDay23H.getMilliseconds() - 1);
 
         const response = await this.find({
             idEmploye: idEmploye,
             etatFini: true,
             dateHeureFin: {
-                $gte: startOfDay,
-                $lt: endOfDay
+                $gte: _startOfDay,
+                $lt: _startOfDay23H
             }
         });
         return response;
@@ -70,63 +71,35 @@ rdvFields.statics.getRdvsByIdEmploye_groupByDAY = async function (idEmploye) {
     }
 };
 
-// rdvFields.statics.getCommissionByidEmployeeDaily = async function (idEmploye) {
-//     // Récupérer les documents de la vue "v_suivitachesjournalieres" pour l'idEmploye donné
-//     console.log('aona ahh'+idEmploye);
-//     const rdvs = await mongoose.model('v_suivitachesjournalieres').aggregate([
-//         {
-//             $match: { idEmploye: parseInt(idEmploye) }
-//         },
-//         {
-//             $lookup: {
-//                 from: 'rdvservices_all_sum',
-//                 let: { idRdv: '$idRdv' },
-//                 pipeline: [
-//                     {
-//                         $match: {
-//                             $expr: {
-//                                 $eq: ['$idRdv', '$$idRdv']
-//                             }
-//                         }
-//                     },
-//                     {
-//                         $group: {
-//                             _id: null,
-//                             totalMontantCommission: { $sum: "$totalMontantCommission" }
-//                         }
-//                     }
-//                 ],
-//                 as: 'totalMontantCommission'
-//             }
-//         },
-//         {
-//             $unwind: {
-//                 path: '$totalMontantCommission',
-//                 preserveNullAndEmptyArrays: true
-//             }
-//         },
-//         {
-//             $addFields: {
-//                 totalMontantCommission: '$totalMontantCommission.totalMontantCommission'
-//             }
-//         }
-//     ]);
+rdvFields.statics.getCommissionByidEmployeeDaily = async function (idEmploye, startOfDay, endOfDay) {
+    // const all_tache_daily = await mongoose.model('v_suivitachesjournalieres').aggregate([
+    //     {
+    //         $match: {
+    //             idEmploye: parseInt(idEmploye)
+    //         }
+    //     }
+    // ]);
 
-//     return rdvs;
-// };
+    const _startOfDay = new Date(startOfDay);
 
-rdvFields.statics.getCommissionByidEmployeeDaily = async function (idEmploye) {
-    const all_tache_daily = await mongoose.model('v_suivitachesjournalieres').aggregate([
-        {
-            $match: {
-                idEmploye: parseInt(idEmploye)
-            }
+    const _startOfDay23H = new Date(_startOfDay);
+    _startOfDay23H.setDate(_startOfDay23H.getDate() + 1);
+    _startOfDay23H.setMilliseconds(_startOfDay23H.getMilliseconds() - 1);
+    
+    const all_tache_daily = await this.find({
+        idEmploye: idEmploye,
+        etatFini: true,
+        dateHeureFin: {
+            $gte: _startOfDay,
+            $lt: _startOfDay23H
         }
-    ]);
-
-    for (let tache of all_tache_daily) {
+    });
+    
+    let all_tache_daily_obj = all_tache_daily.map(tache => tache.toObject());
+    
+    for (let tache of all_tache_daily_obj) {
         let totalMontantCommission = 0;
-        console.log(" irdv "+ tache._idRdv);
+        console.log(" irdv " + tache._idRdv);
         const rdvServices = await mongoose.model('rdvservices_all_sum').aggregate([
             {
                 $match: {
@@ -134,17 +107,17 @@ rdvFields.statics.getCommissionByidEmployeeDaily = async function (idEmploye) {
                 }
             }
         ]);
-        
+    
         for (let rdvService of rdvServices) {
-            console.log("ttt "+rdvService.totalMontantCommission+" irdv "+ parseInt(tache._idRdv));
             totalMontantCommission += parseInt(rdvService.totalMontantCommission);
+            console.log("ttt " + rdvService.totalMontantCommission + " tena sum " + parseInt(totalMontantCommission));
         }
         // Ajouter totalMontantCommission à tache
         tache.totalMontantCommission = totalMontantCommission;
     }
-
-    // Retourner all_tache_daily avec totalMontantCommission pour chaque tache
-    return all_tache_daily;
+    
+    return all_tache_daily_obj;
+    
 }
 
 

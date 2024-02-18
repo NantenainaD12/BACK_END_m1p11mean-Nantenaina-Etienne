@@ -207,3 +207,149 @@ db.v_suivitachesjournalieres.aggregate([
         }
     }
 ])
+
+///v_RdvExtracted
+db.createView(
+    "v_RdvExtracted",
+    "rdvs",
+    [
+        {
+            $project: {
+                idRdv: 1,
+                jour: { $dayOfMonth: "$dateHeureDebut" },
+                mois: { $month: "$dateHeureDebut" },
+                dateDebut: "$dateHeureDebut",
+                montant: "$montantTotalPaye"
+            }
+        }
+    ]
+)
+
+
+////v_ReservationParJour
+db.createView(
+    "v_ReservationParJour",
+    "v_RdvExtracted",
+    [
+        {
+            $group: {
+                _id: { jour: "$jour", mois: "$mois" },
+                count: { $sum: 1 }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                jour: "$_id.jour",
+                mois: "$_id.mois",
+                count: 1
+            }
+        }
+    ]
+)
+
+///v_ReservationParMois
+db.createView(
+    "v_ReservationParMois",
+    "v_RdvExtracted",
+    [
+        {
+            $group: {
+                _id: { mois: "$mois" },
+                count: { $sum: 1 }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                mois: "$_id.mois",
+                count: 1
+            }
+        }
+    ]
+)
+
+///v_ChiffreAffaireParJour
+db.createView(
+    "v_ChiffreAffaireParJour",
+    "v_RdvExtracted",
+    [
+        {
+            $group: {
+                _id: { jour: "$jour", mois: "$mois" },
+                total: { $sum: "$montant" }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                jour: "$_id.jour",
+                mois: "$_id.mois",
+                total: 1
+            }
+        }
+    ]
+)
+
+
+/// v_ChiffreAffaireParMois
+db.createView(
+    "v_ChiffreAffaireParMois",
+    "v_RdvExtracted",
+    [
+        {
+            $group: {
+                _id: { mois: "$mois" },
+                total: { $sum: "$montant" }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                mois: "$_id.mois",
+                total: 1
+            }
+        }
+    ]
+)
+ 
+/// v_DepenseExtracted
+db.createView(
+    "v_DepenseExtracted",
+    "depenses",
+    [
+        {
+            $project: {
+                jour: { $dayOfMonth: "$dateDepense" },
+                mois: { $month: "$dateDepense" },
+                montant: 1,
+                dateDepense: 1
+            }
+        }
+    ]
+)
+
+
+///v_DepenseParMois
+db.createView(
+    "v_DepenseParMois",
+    "v_DepenseExtracted",
+    [
+        {
+            $group: {
+                _id: { mois: "$mois" },
+                total: { $sum: "$montant" }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                mois: "$_id.mois",
+                total: 1
+            }
+        }
+    ]
+)
+
+
+

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 var clientController = require('../Controllers/ClientController')
 var ServiceController = require('../Controllers/ServiceControllerNata')
+var StatistiqueController = require('../Controllers/StatistiqueController')
 var Con_Emp_auth = require ('../Controllers/EmployesController')
 var authenticateToken = require('../Model/Tools/TokenManager')
 
@@ -28,5 +29,12 @@ router.route('/Manager/GetAllServices').get(ServiceController.GetAllServices);
 router.route('/Manager/CreateService').post(ServiceController.CreateService);
 router.route('/Manager/UpdateService/:idService').post(ServiceController.UpdateService);
 router.route('/Manager/DeleteService/:idService').post(ServiceController.DeleteService);
+
+//Manager Statistiques
+router.route('/Manager/CoutReservation_Day_month').post(StatistiqueController.CoutReservation_Day_month);
+router.route('/Manager/CoutReservation_By_month').post(StatistiqueController.CoutReservation_By_month);
+router.route('/Manager/ChiffreAffaireParJour').post(StatistiqueController.ChiffreAffaireParJour);
+router.route('/Manager/ChiffreAffaireParMois').post(StatistiqueController.ChiffreAffaireParMois);
+router.route('/Manager/Get_benfice_monthly').post(StatistiqueController.Get_benfice_monthly);
 
 module.exports = router;

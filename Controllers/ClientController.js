@@ -206,7 +206,19 @@ var clientMethods = {
             };
             res.status(200).send(offers);
         } catch (error) {
-            console.error("Erreur lors la préférence de service, ", error.message);
+            console.error("Erreur lors de la préférence de service, ", error.message);
+            res.status(400).send(error);
+        }
+    },
+    onlinePayment: async(req, res) => {
+        try {
+            const idRdv = parseInt(req.query.idRdv);
+            now = new Date();
+            await RdvModel.updateOne({ _idRdv: idRdv }, { $set: { datePayement: now, etatFini: true } });
+            const rdv = await RdvModel.find({ _idRdv: idRdv });
+            res.status(200).send(rdv);
+        } catch (error) {
+            console.error("Erreur lors du paiement en ligne, ", error.message);
             res.status(400).send(error);
         }
     }

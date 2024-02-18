@@ -14,6 +14,7 @@ router.route('/client/employe_preference').get(clientController.employePreferenc
 router.route('/client/service_preference').get(clientController.servicePreference);
 router.route('/client/appointment_reminder').get(clientController.appointmentReminder);
 router.route('/client/special_offers_notifications').get(clientController.specialOffersNotifications);
+router.route('/client/online_payment').get(clientController.onlinePayment);
 
 var Con_Emp_auth = require('../Controllers/EmployesController')
 var authenticateToken = require('../Model/Tools/TokenManager');

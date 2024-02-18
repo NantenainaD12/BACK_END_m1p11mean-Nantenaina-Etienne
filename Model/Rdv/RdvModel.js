@@ -29,7 +29,11 @@ var rdvFields = new Schema({
     etatFini: {
         type: Boolean,
         required: true
-    }
+    },
+    datePayement: {
+        type: Date,
+        required: false
+    },
 });
 
 module.exports = mongoose.model('rdvs', rdvFields);

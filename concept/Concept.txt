@@ -30,7 +30,7 @@ TABLE :
         - dateHeureFin
         - idEmploye
         - montantTotalPaye
-        - etatFini boolean
+        - etatFini
         - datePayement
 
     RdvServices : 

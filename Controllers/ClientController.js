@@ -19,8 +19,7 @@ var clientMethods = {
                 res.status(400).send("Client non authentifié");
             }
         } catch (error) {
-            console.log("Erreur lors de l'authentification du client, ", error.message);
-            res.status(400).send(error);
+            res.status(400).send("Erreur lors de l'authentification du client, ", error.message);
         }
     },
     homepageClient: async(req, res) => {
@@ -32,8 +31,7 @@ var clientMethods = {
                 res.send('Connectez-vous d\'abord');
             }
         } catch (error) {
-            console.log("Erreur dans la page d'accueil du client, ", error.message);
-            res.status(400).send(error);
+            res.status(400).send("Erreur dans la page d'accueil du client, ", error.message);
         }
     },
     logoutClient: async(req, res) => {
@@ -57,13 +55,10 @@ var clientMethods = {
                 pdp: req.body.pdp,
                 telephone: req.body.telephone
             });
-
             const newClient = await client.save();
-            console.log("Compte client créé avec succès :", newClient);
             res.status(200).send(newClient);
         } catch (error) {
-            console.error("Erreur lors de la création du compte client, ", error.message);
-            res.status(400).send(error);
+            res.status(400).send("Erreur lors de la création du compte client, ", error.message);
         }
     },
     onlineAppointmentBooking: async(req, res) => {
@@ -115,8 +110,7 @@ var clientMethods = {
             var newRdv = await rdv.save();
             res.status(200).send(newRdv);
         } catch (error) {
-            console.error("Erreur lors de la prise de rendez-vous en ligne, ", error.message);
-            res.status(400).send(error);
+            res.status(400).send("Erreur lors de la prise de rendez-vous en ligne, ", error.message);
         }
     },
     appointmentHistory: async(req, res) => {
@@ -131,8 +125,7 @@ var clientMethods = {
             }
             res.status(200).send(currentsRdvs);
         } catch (error) {
-            console.error("Erreur lors de l'historique de de rendez-vous, ", error.message);
-            res.status(400).send(error);
+            res.status(400).send("Erreur lors de l'historique de de rendez-vous, ", error.message);
         }
     },
     employePreference: async(req, res) => {
@@ -147,8 +140,7 @@ var clientMethods = {
             };
             res.status(200).send(employees);
         } catch (error) {
-            console.error("Erreur lors de la préférence d'employé, ", error.message);
-            res.status(400).send(error);
+            res.status(400).send("Erreur lors de la préférence d'employé, ", error.message);
         }
     },
     servicePreference: async(req, res) => {
@@ -179,8 +171,7 @@ var clientMethods = {
             };
             res.status(200).send(services);
         } catch (error) {
-            console.error("Erreur lors de la préférence de service, ", error.message);
-            res.status(400).send(error);
+            res.status(400).send("Erreur lors de la préférence de service, ", error.message);
         }
     },
     appointmentReminder: async(req, res) => {
@@ -206,8 +197,7 @@ var clientMethods = {
             };
             res.status(200).send(offers);
         } catch (error) {
-            console.error("Erreur lors de la préférence de service, ", error.message);
-            res.status(400).send(error);
+            res.status(400).send("Erreur lors de la préférence de service, ", error.message);
         }
     },
     onlinePayment: async(req, res) => {
@@ -218,8 +208,7 @@ var clientMethods = {
             const rdv = await RdvModel.find({ _idRdv: idRdv });
             res.status(200).send(rdv);
         } catch (error) {
-            console.error("Erreur lors du paiement en ligne, ", error.message);
-            res.status(400).send(error);
+            res.status(400).send("Erreur lors du paiement en ligne, ", error.message);
         }
     }
 };

@@ -28,15 +28,12 @@ var serviceFields = new Schema({
         required: true
     },
     horaireDebut: {
-        type: String, 
+        type: String,
         required: true
     },
     horaireFin: {
-        type: String, 
+        type: String,
         required: true
-    },
-    salaire: {
-        type: Number 
     }
 });
 

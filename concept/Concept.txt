@@ -30,17 +30,20 @@ TABLE :
         - dateHeureFin
         - idEmploye
         - montantTotalPaye
-        - etatFini boolean
+        - etatFini
+        - datePayement
 
     RdvServices : 
         - idRdv
         - idService
         - prixNormal
         - prixApresRemise
+        - idOffreSpeciale
         - montantCommission
 
     OffreSpeciales : 
         - idOffreSpeciale
+        - description
         - dateDebut
         - dateFin
         - idService

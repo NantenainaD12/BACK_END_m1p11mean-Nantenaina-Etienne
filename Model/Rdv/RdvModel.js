@@ -29,7 +29,11 @@ var rdvFields = new Schema({
     etatFini: {
         type: Boolean,
         required: true
-    }
+    },
+    datePayement: {
+        type: Date,
+        required: false
+    },
 });
 rdvFields.statics.getRdvsByIdEmploye = async function (idEmploye) {
     try {

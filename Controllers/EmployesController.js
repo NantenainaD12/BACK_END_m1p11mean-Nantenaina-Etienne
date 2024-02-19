@@ -1,6 +1,7 @@
 require('dotenv').config();
 var EmployeeModel = require('../Model/Employee/EmployeeModel')
 const getNextSequence = require('../Model/Tools/Counter');
+const Rdv = require('../Model/Rdv/RdvModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -47,43 +48,43 @@ var Emp_authentification = {
                 message: error.message
             });
         }
-    },
-    updateEmployee: async (req, res) => {
-            try {
-                const idEmploye = req.params.idEmploye; // récupérer le idEmploye du paramètre de la route
-                const nom = req.body.nom;
-                const email = req.body.email;
-                const mdp = req.body.mdp;
-                const pdp = req.body.pdp;
-                const horaireDebut = req.body.horaireDebut;
-                const horaireFin = req.body.horaireFin;
+    }, updateEmployee: async (req, res) => {
+        try {
+            const idEmploye = req.params.idEmploye; // récupérer le idEmploye du paramètre de la route
+            const nom = req.body.nom;
+            const email = req.body.email;
+            const mdp = req.body.mdp;
+            const pdp = req.body.pdp;
+            const horaireDebut = req.body.horaireDebut;
+            const horaireFin = req.body.horaireFin;
 
-                const mdpHashed = await hashPassword(mdp);
+            const mdpHashed = mdp ? await hashPassword(mdp) : undefined;
 
-                // trouver l'employé par son idEmploye et mettre à jour ses données
-                await EmployeeModel.findOneAndUpdate({
-                    idEmploye: idEmploye
-                }, {
+            // trouver l'employé par son idEmploye et mettre à jour ses données
+            const updatedEmployee = await EmployeeModel.findOneAndUpdate({
+                idEmploye: idEmploye
+            }, {
+                $set: {
                     nom: nom,
                     mdp: mdpHashed,
                     email: email,
                     pdp: pdp,
                     horaireDebut: horaireDebut,
                     horaireFin: horaireFin
-                });
+                }
+            }, { new: true });
 
-                res.status(200).send({
-                    "status": true,
-                    "message": "Profil mis à jour"
-                });
+            res.status(200).send({
+                "status": true,
+                "message": "Profil mis à jour",
+                "updatedEmployee": updatedEmployee
+            });
 
-            } catch (error) {
-                console.log(error);
-                res.status(400).send(error);
-            }
+        } catch (error) {
+            console.log(error);
+            res.status(400).send(error);
         }
-
-        ,
+    },
     DeleteQuotes: async (req, res) => {
         try {
             const name = req.query.name;
@@ -123,9 +124,7 @@ var Emp_authentification = {
 
             // Authentification réussie
             const secret_key = process.env.SECRET_KEY;
-            const token = jwt.sign({
-                id: employee._id
-            }, secret_key, {
+            const token = jwt.sign({ id: employee._id }, secret_key, {
                 expiresIn: '1h'
             });
             return res.status(200).json({
@@ -140,7 +139,67 @@ var Emp_authentification = {
                 message: 'Internal server error'
             });
         }
+    },
+    getRdvsByIdEmploye: async (req, res) => {
+        try {
+            const idEmploye = req.params.idEmploye;
+            const rdvs = await Rdv.getRdvsByIdEmploye(idEmploye);
+            res.status(200).json(rdvs);
+        } catch (error) {
+            res.status(500).send({
+                message: error.message
+            });
+        }
+    },
+    // getRdvsDONEByIdEmploye_groupByDAY : async (req, res) => {
+    //     try {
+    //         const idEmploye = req.params.idEmploye;
+    //         const rdvs = await Rdv.getRdvsDONEByIdEmploye_groupByDAY(idEmploye);
+    //         res.status(200).json(rdvs);
+    //     } catch (error) {
+    //         res.status(500).send({
+    //             message: error.message
+    //         });
+    //     }
+    // }
+    getRdvsDONEByIdEmploye_groupByDAY: async (req, res) => {
+        try {
+            const idEmploye = req.params.idEmploye;
+            const startOfDay = new Date(req.body.datedebut);
+            const endOfDay = new Date(req.body.datefin);
+            if (isNaN(startOfDay) || isNaN(endOfDay)) {
+                return res.status(400).send({
+                    message: 'Invalid date format'
+                });
+            }
+            const rdvs = await Rdv.getRdvsDONEByIdEmploye_groupByDAY(idEmploye, startOfDay, endOfDay);
+            res.status(200).json(rdvs);
+        } catch (error) {
+            res.status(500).send({
+                message: error.message
+            });
+        }
+    },
+    getCommissionByidEmployeeDaily: async (req, res) => {
+        try {
+            const idEmploye = req.params.idEmploye;   
+            const startOfDay = req.body.datedebut ? new Date(req.body.datedebut) : new Date();
+            const endOfDay = new Date(req.body.datefin);
+            if (isNaN(startOfDay) || isNaN(endOfDay)) {
+                return res.status(400).send({
+                    message: 'Invalid date format'
+                });
+            }
+            const rdvs = await Rdv.getCommissionByidEmployeeDaily(idEmploye, startOfDay, endOfDay);
+            
+            res.status(200).json(rdvs);
+        } catch (error) {
+            res.status(500).send({
+                message: error.message
+            });
+        }
     }
+
 }
 
 async function hashPassword(password) {

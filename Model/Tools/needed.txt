@@ -49,3 +49,161 @@ export class EmployeeService {
 
 
 
+{
+    "$expr": {
+      "$and": [
+        {
+          "$eq": [
+            { "$dateToString": { "format": "%Y-%m-%d", "date": "$dateHeureFin" } },
+            { "$dateToString": { "format": "%Y-%m-%d", "date": new Date() } }
+          ]
+        },
+        {
+          "$eq": [ "$etatFini", true ]
+        }
+      ]
+    }
+  
+}
+
+
+db.createView(
+   "firstYears",
+   "students",
+   [ { $match: { year: 1 } } ]
+)
+
+
+const today = new Date();
+
+// Créer une date avec le début du jour courant (8:00:00 UTC)
+const startOfDay = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 0));
+
+// Créer une date avec la fin du jour courant (22:58:00 UTC)
+const endOfDay = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 23, 58, 0));
+
+db.createView(
+    "v_suivitachesjournalieres",
+    "rdvs",
+    [
+        {
+            "$match": {
+                "dateHeureFin": {
+                    "$gte": startOfDay,
+                    "$lt" : endOfDay
+                },
+                "etatFini": true
+            }
+        }
+    ]
+)
+
+
+db.v_suivitachesjournalieres.find()
+db.v_suivitachesjournalieres.drop()
+
+
+db.createView(
+    "rdvservices_all_sum", // Nom de la vue
+    "rdvservices", // Nom de la collection source
+    [ // Pipeline d'agrégation
+        {
+            $group: {
+                _id: { idRdv: "$idRdv", idService: "$idService" },
+                totalMontantCommission: { $sum: "$montantCommission" }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                idRdv: "$_id.idRdv",
+                idService: "$_id.idService",
+                totalMontantCommission: 1
+            }
+        }
+    ]
+)
+
+
+db.rdvservices_all_sum.find()
+
+db.rdvservices_all_sum.drop()
+
+
+
+
+
+
+
+rdvFields.statics.getRdvsByIdEmployeAndClient = async function (idEmploye, idClient) {
+    try {
+        // Récupérer les rdvs par idEmploye
+        const rdvs = await this.find({
+            idEmploye: idEmploye,
+            etatFini: false
+        });
+
+        // Sélectionner les idRdv par idClient dans v_suivitachesjournalieres
+        const v_suivitachesjournalieres = db.v_suivitachesjournalieres.find({
+            idClient: idClient
+        });
+
+        // Filtrer les rdvs par les idRdv
+        const filteredRdvs = rdvs.filter(rdv => 
+            v_suivitachesjournalieres.some(v => v.idRdv === rdv._id)
+        );
+
+        // Filtrer rdvservices_all_sum par les idRdv
+        const rdvservices_all_sum = db.rdvservices_all_sum.find();
+        const filteredSum = rdvservices_all_sum.filter(sum => 
+            filteredRdvs.some(rdv => rdv.idService === sum._id)
+        );
+
+        return filteredSum;
+    } catch (error) {
+        console.error('Erreur lors de la récupération des rendez-vous :', error);
+        throw error;
+    }
+};
+
+https://www.bing.com/search?q=Bing+AI&showconv=1&FORM=undexpand
+
+
+db.v_suivitachesjournalieres.aggregate([
+    {
+        $match: { idEmploye: 6 } // Remplacez <idEmploye> par l'ID de l'employé que vous voulez rechercher
+    },
+    {
+        $lookup: {
+            from: 'rdvservices_all_sum',
+            let: { idRdv: '$idRdv' },
+            pipeline: [
+                {
+                    $match: {
+                        $expr: {
+                            $eq: ['$idRdv', '$$_idRdv']
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        totalMontantCommission: { $sum: "$totalMontantCommission" }
+                    }
+                }
+            ],
+            as: 'totalMontantCommission'
+        }
+    },
+    {
+        $unwind: {
+            path: '$totalMontantCommission',
+            preserveNullAndEmptyArrays: true
+        }
+    },
+    {
+        $addFields: {
+            totalMontantCommission: '$totalMontantCommission.totalMontantCommission'
+        }
+    }
+])

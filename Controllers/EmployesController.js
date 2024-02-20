@@ -42,6 +42,7 @@ var Emp_authentification = {
     GetAllEmployee: async (req, res) => {
         try {
             const clients = await EmployeeModel.find();
+            console.log(" GET ALL EMPLOYE");
             res.status(200).send(clients);
         } catch (error) {
             res.status(500).send({

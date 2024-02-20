@@ -59,6 +59,9 @@ TABLE :
         - montant
         - dateDepense
 
+        db.createCollection("depenses")
+
+
 VUE : 
     EMPLOYE :
         1)  * v_SuiviTachesJournalieres : Suivi de taches journaliers

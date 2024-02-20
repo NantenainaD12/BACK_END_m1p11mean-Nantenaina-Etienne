@@ -22,18 +22,6 @@ var serviceFields = new Schema({
     commission: {
         type: Number,
         required: true
-    },
-    pdp: {
-        type: String, // Utilisation d'un lien vers l'image du profil (String)
-        required: true
-    },
-    horaireDebut: {
-        type: String,
-        required: true
-    },
-    horaireFin: {
-        type: String,
-        required: true
     }
 });
 

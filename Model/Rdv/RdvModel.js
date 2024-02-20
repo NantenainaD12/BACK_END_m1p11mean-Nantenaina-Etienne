@@ -72,13 +72,6 @@ rdvFields.statics.getRdvsDONEByIdEmploye_groupByDAY = async function (idEmploye,
 };
 
 rdvFields.statics.getCommissionByidEmployeeDaily = async function (idEmploye, startOfDay, endOfDay) {
-    // const all_tache_daily = await mongoose.model('v_suivitachesjournalieres').aggregate([
-    //     {
-    //         $match: {
-    //             idEmploye: parseInt(idEmploye)
-    //         }
-    //     }
-    // ]);
 
     const _startOfDay = new Date(startOfDay);
 
@@ -129,6 +122,12 @@ var EmptySchema = new Schema({}, {
 // Enregistrer le modèle pour la vue
 mongoose.model('v_suivitachesjournalieres', EmptySchema, 'v_suivitachesjournalieres');
 mongoose.model('rdvservices_all_sum', EmptySchema, 'rdvservices_all_sum');
+mongoose.model('v_ReservationParJour', EmptySchema, 'v_ReservationParJour');
+mongoose.model('v_ReservationParMois', EmptySchema, 'v_ReservationParMois');
+mongoose.model('v_ChiffreAffaireParMois', EmptySchema, 'v_ChiffreAffaireParMois');
+mongoose.model('v_ChiffreAffaireParJour', EmptySchema, 'v_ChiffreAffaireParJour');
+mongoose.model('v_DepenseParMois', EmptySchema, 'v_DepenseParMois');
+
 
 
 const Rdv = mongoose.model('rdvs', rdvFields);

@@ -107,7 +107,6 @@ rdvFields.statics.getCommissionByidEmployeeDaily = async function (idEmploye, st
     
         for (let rdvService of rdvServices) {
             totalMontantCommission += parseInt(rdvService.totalMontantCommission);
-            console.log("ttt " + rdvService.totalMontantCommission + " tena sum " + parseInt(totalMontantCommission));
         }
         // Ajouter totalMontantCommission à tache
         tache.totalMontantCommission = totalMontantCommission;

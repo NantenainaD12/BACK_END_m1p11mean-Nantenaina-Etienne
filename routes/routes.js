@@ -2,13 +2,9 @@ const express = require('express');
 const multer = require("multer");
 const router = express.Router();
 var clientController = require('../Controllers/ClientController')
-<<<<<<< Updated upstream
 var ServiceController = require('../Controllers/ServiceControllerNata')
 var StatistiqueController = require('../Controllers/StatistiqueController')
-var Con_Emp_auth = require ('../Controllers/EmployesController')
-=======
 var Con_Emp_auth = require('../Controllers/EmployesController')
->>>>>>> Stashed changes
 var authenticateToken = require('../Model/Tools/TokenManager')
 
 // CLIENT

@@ -23,10 +23,10 @@ router.route('/client/online_payment').get(clientController.onlinePayment);
 router.route('/client/online_booking').post(multer().none(), clientController.onlineAppointmentBooking);
 
 // EMPLOYE
-router.route('/Employe/createEmployee').post(Con_Emp_auth.createEmployee);
-router.route('/Employe/LoginEmployee').post(Con_Emp_auth.Login_Employee);
-router.route('/Employe/updateEmployee/:idEmploye').post(Con_Emp_auth.updateEmployee);
-router.route('/Employe/GetAllEmployee').get(authenticateToken, Con_Emp_auth.GetAllEmployee);
+router.route('/Employe/createEmployee').post(multer().none(),Con_Emp_auth.createEmployee);
+router.route('/Employe/LoginEmployee').post(multer().none(),Con_Emp_auth.Login_Employee);
+router.route('/Employe/updateEmployee/:idEmploye').post(multer().none(),Con_Emp_auth.updateEmployee);
+router.route('/Employe/GetAllEmployee').get( Con_Emp_auth.GetAllEmployee);
 router.route('/Employe/rdvs/:idEmploye').get(authenticateToken, Con_Emp_auth.getRdvsByIdEmploye);
 router.route('/Employe/rdvs_done_daily/:idEmploye').get(Con_Emp_auth.getRdvsDONEByIdEmploye_groupByDAY);
 router.route('/Employe/rdvs_done_daily_with_commission/:idEmploye').get(Con_Emp_auth.getCommissionByidEmployeeDaily);

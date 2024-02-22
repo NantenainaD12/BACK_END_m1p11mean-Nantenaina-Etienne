@@ -12,7 +12,7 @@ router.route('/client/signin').post(multer().none(), clientController.signInClie
 router.route('/client/homepage').get(clientController.homepageClient);
 router.route('/client/logout').get(clientController.logoutClient);
 router.route('/client/login').get(clientController.loginClient);
-router.route('/client/new').post(multer().none(), clientController.createAccountClient);
+router.route('/client/signup').post(multer().none(), clientController.createAccountClient);
 router.route('/client/appointment_booking').post(multer().none(), clientController.onlineAppointmentBooking);
 router.route('/client/appointment_history').get(clientController.appointmentHistory);
 router.route('/client/employe_preference').get(clientController.employePreference);

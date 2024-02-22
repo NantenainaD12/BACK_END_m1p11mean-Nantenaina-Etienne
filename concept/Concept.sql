@@ -135,3 +135,22 @@ db.offrespeciales.insertMany([
         pourcentageRemise: 0.25
     }
 ]);
+
+db.offrespeciales.insertMany([
+    {
+        _idOffreSpeciale: 1001,
+        description: "Feb Manifik 1001",
+        dateDebut: "2024-02-15T00:00:00",
+        dateFin: "2024-03-10T00:00:00",
+        idService: 4,
+        pourcentageRemise: 0.12
+    },
+    {
+        _idOffreSpeciale: 2,
+        description: "new new new feb 2024",
+        dateDebut: "2024-02-10T00:00:00",
+        dateFin: "2024-03-10T00:00:00",
+        idService: 2,
+        pourcentageRemise: 0.25
+    }
+]);

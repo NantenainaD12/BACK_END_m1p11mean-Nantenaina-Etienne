@@ -48,6 +48,21 @@ rdvFields.statics.getRdvsByIdEmploye = async function (idEmploye) {
     }
 };
 
+rdvFields.statics.updateEtatFini = async function (idRdv, newEtatFini) {
+    try {
+        console.log("ffff"+idRdv+" new etat"+newEtatFini);
+        const response = await this.findOneAndUpdate(
+            { _idRdv: idRdv },
+            { $set: { etatFini: newEtatFini } },
+            { new: true } // Cette option fait en sorte que le document mis à jour soit renvoyé
+        );
+        return response;
+    } catch (error) {
+        console.error('Erreur lors de la mise à jour de etatFini :', error);
+        throw error;
+    }
+};
+
 
 
 

@@ -25,11 +25,12 @@ router.route('/client/online_booking').post(multer().none(), clientController.on
 // EMPLOYE
 router.route('/Employe/createEmployee').post(multer().none(),Con_Emp_auth.createEmployee);
 router.route('/Employe/LoginEmployee').post(multer().none(),Con_Emp_auth.Login_Employee);
-router.route('/Employe/updateEmployee/:idEmploye').post(multer().none(),Con_Emp_auth.updateEmployee);
+router.route('/Employe/updateEmployee/:idEmploye').post(multer().none(),authenticateToken,Con_Emp_auth.updateEmployee);
 router.route('/Employe/GetAllEmployee').get( Con_Emp_auth.GetAllEmployee);
 router.route('/Employe/rdvs/:idEmploye').get(authenticateToken, Con_Emp_auth.getRdvsByIdEmploye);
 router.route('/Employe/rdvs_done_daily/:idEmploye').get(Con_Emp_auth.getRdvsDONEByIdEmploye_groupByDAY);
 router.route('/Employe/rdvs_done_daily_with_commission/:idEmploye').get(Con_Emp_auth.getCommissionByidEmployeeDaily);
+router.route('/Employe/updateEtatFini/:idRdv').put( Con_Emp_auth.updateEtatFini);
 
 //Manager
 router.route('/Manager/GetAllServices').get(ServiceController.GetAllServices);

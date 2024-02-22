@@ -49,7 +49,8 @@ var Emp_authentification = {
                 message: error.message
             });
         }
-    }, updateEmployee: async (req, res) => {
+    },
+    updateEmployee: async (req, res) => {
         try {
             const idEmploye = req.params.idEmploye; // récupérer le idEmploye du paramètre de la route
             const nom = req.body.nom;
@@ -61,19 +62,23 @@ var Emp_authentification = {
 
             const mdpHashed = mdp ? await hashPassword(mdp) : undefined;
 
+            // Construire l'objet de mise à jour
+            let updateObj = {};
+            if (nom) updateObj.nom = nom;
+            if (mdpHashed) updateObj.mdp = mdpHashed;
+            if (email) updateObj.email = email;
+            if (pdp) updateObj.pdp = pdp;
+            if (horaireDebut) updateObj.horaireDebut = horaireDebut;
+            if (horaireFin) updateObj.horaireFin = horaireFin;
+
             // trouver l'employé par son idEmploye et mettre à jour ses données
             const updatedEmployee = await EmployeeModel.findOneAndUpdate({
                 idEmploye: idEmploye
             }, {
-                $set: {
-                    nom: nom,
-                    mdp: mdpHashed,
-                    email: email,
-                    pdp: pdp,
-                    horaireDebut: horaireDebut,
-                    horaireFin: horaireFin
-                }
-            }, { new: true });
+                $set: updateObj
+            }, {
+                new: true
+            });
 
             res.status(200).send({
                 "status": true,
@@ -125,7 +130,9 @@ var Emp_authentification = {
 
             // Authentification réussie
             const secret_key = process.env.SECRET_KEY;
-            const token = jwt.sign({ id: employee._id }, secret_key, {
+            const token = jwt.sign({
+                id: employee._id
+            }, secret_key, {
                 expiresIn: '1h'
             });
             return res.status(200).json({
@@ -144,6 +151,7 @@ var Emp_authentification = {
     getRdvsByIdEmploye: async (req, res) => {
         try {
             const idEmploye = req.params.idEmploye;
+            console.log("id = " + idEmploye);
             const rdvs = await Rdv.getRdvsByIdEmploye(idEmploye);
             res.status(200).json(rdvs);
         } catch (error) {
@@ -152,17 +160,18 @@ var Emp_authentification = {
             });
         }
     },
-    // getRdvsDONEByIdEmploye_groupByDAY : async (req, res) => {
-    //     try {
-    //         const idEmploye = req.params.idEmploye;
-    //         const rdvs = await Rdv.getRdvsDONEByIdEmploye_groupByDAY(idEmploye);
-    //         res.status(200).json(rdvs);
-    //     } catch (error) {
-    //         res.status(500).send({
-    //             message: error.message
-    //         });
-    //     }
-    // }
+    updateEtatFini: async (req, res) => {
+        try {
+            const idRdv = req.params.idRdv;
+            const newEtatFini = req.body.etatFini;
+            const rdvs = await Rdv.updateEtatFini(idRdv, newEtatFini);
+            res.status(200).json(rdvs);
+        } catch (error) {
+            res.status(500).send({
+                message: error.message
+            });
+        }
+    },
     getRdvsDONEByIdEmploye_groupByDAY: async (req, res) => {
         try {
             const idEmploye = req.params.idEmploye;
@@ -183,7 +192,7 @@ var Emp_authentification = {
     },
     getCommissionByidEmployeeDaily: async (req, res) => {
         try {
-            const idEmploye = req.params.idEmploye;   
+            const idEmploye = req.params.idEmploye;
             const startOfDay = req.body.datedebut ? new Date(req.body.datedebut) : new Date();
             const endOfDay = new Date(req.body.datefin);
             if (isNaN(startOfDay) || isNaN(endOfDay)) {
@@ -192,7 +201,7 @@ var Emp_authentification = {
                 });
             }
             const rdvs = await Rdv.getCommissionByidEmployeeDaily(idEmploye, startOfDay, endOfDay);
-            
+
             res.status(200).json(rdvs);
         } catch (error) {
             res.status(500).send({

@@ -64,15 +64,15 @@ var clientMethods = {
     onlineAppointmentBooking: async(req, res) => {
         try {
             var _idRdv = 0;
-            var idClient = req.session.client._idClient;
+            var idClient = parseInt(req.query.idClient);
             var dateHeureDebut = new Date(req.body.dateHeureDebut);
             if (dateHeureDebut.getTime() < new Date().getTime()) {
-                res.status(400).send("Date de début invalide");
+                res.status(400).send('Invalid debut date');
                 return;
             }
             _idRdv = await getNextSequence('rdvs');
             var idEmploye = req.body.idEmploye;
-            var idServices = req.body.idServices;
+            var idServices = req.body.idServices.split(",").map(Number);
             const services = await ServiceModel.find({ _idService: { $in: idServices } }).exec();
             var minutes = 0;
             var montantTotal = 0;

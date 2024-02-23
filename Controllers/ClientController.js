@@ -190,9 +190,8 @@ var clientMethods = {
             const offreSpeciales = await OffreSpecialeModel.find({}).sort({ dateDebut: 1 });
             const offers = [];
             for (const offreSpeciale of offreSpeciales) {
-                if (offreSpeciale.dateDebut <= now && now <= offreSpeciale.dateFin) {
-                    offreSpeciale.service = await ServiceModel.find({ _idService: offreSpeciale.idService });
-                    offers.push(offreSpeciale);
+                if (offreSpeciale.dateDebut <= now && now <= offreSpeciale.dateFin) {;
+                    offers.push({ 'offreSpeciale': offreSpeciale, 'service': await ServiceModel.findOne({ _idService: offreSpeciale.idService }) });
                 }
             };
             res.status(200).send(offers);

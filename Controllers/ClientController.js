@@ -115,15 +115,18 @@ var clientMethods = {
     },
     appointmentHistory: async(req, res) => {
         try {
-            var idClient = req.session.client._idClient;
-            const currentsRdvs = await RdvModel.find({ $and: [{ idClient: idClient }, { etatFini: false }] }).sort({ dateHeureDebut: 1 }).exec();
+            var idClient = parseInt(req.query.idClient);
+            const rdvs = [];
+            const currentsRdvs = await RdvModel.find({ idClient: idClient }).sort({ etatFini: 1, dateHeureDebut: 1 });
             for (const currentsRdv of currentsRdvs) {
-                currentsRdv.rdvService = await RdvServiceModel.find({ idRdv: currentsRdv._idRdv }).exec();
-                for (const rdvService of currentsRdv.rdvService) {
-                    rdvService.service = await ServiceModel.findOne({ _idService: rdvService.idService }).exec();
+                var services = [];
+                var rdvServices = await RdvServiceModel.find({ idRdv: currentsRdv._idRdv });
+                for (const rdvService of rdvServices) {
+                    services.push({ 'rdvservice': rdvService, 'service': await ServiceModel.findOne({ _idService: rdvService.idService }), 'offrespeciale': await OffreSpecialeModel.findOne({ _idOffreSpeciale: rdvService.idOffreSpeciale }) });
                 }
+                rdvs.push({ 'rdv': currentsRdv, 'employe': await EmployeModel.findOne({ idEmploye: currentsRdv.idEmploye }), 'services': services });
             }
-            res.status(200).send(currentsRdvs);
+            res.status(200).send(rdvs);
         } catch (error) {
             res.status(400).send("Erreur lors de l'historique de de rendez-vous, ", error.message);
         }

@@ -22,6 +22,9 @@ router.route('/client/special_offers_notifications').get(clientController.specia
 router.route('/client/online_payment').get(clientController.onlinePayment);
 router.route('/client/online_booking').post(multer().none(), clientController.onlineAppointmentBooking);
 
+// WITHOUT TOKEN
+router.route('/employe/get_employes').get(Con_Emp_auth.GetAllEmployee);
+
 // EMPLOYE
 router.route('/Employe/createEmployee').post(Con_Emp_auth.createEmployee);
 router.route('/Employe/LoginEmployee').post(Con_Emp_auth.Login_Employee);

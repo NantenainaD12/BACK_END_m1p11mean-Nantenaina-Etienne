@@ -50,17 +50,43 @@ var Emp_authentification = {
             });
         }
     },
+    getEmployeById: async (req, res) => {
+        const id = req.params.idEmploye;
+        try {
+           // const employee = await EmployeeModel.findById(id);
+            const employee = await EmployeeModel.find({
+                idEmploye: id
+            });
+            if (!employee) {
+                return res.status(404).send({
+                    message: "Employé non trouvé avec l'id " + id
+                });
+            }
+            res.status(200).send(employee);
+        } catch (error) {
+            if(error.kind === 'ObjectId') {
+                return res.status(404).send({
+                    message: "Error Employé non trouvé avec l'id " + id +" error = "+error.message
+                });                
+            }
+            return res.status(500).send({
+                message: "Erreur lors de la récupération de l'employé avec l'id " + id
+            });
+        }
+    },
     updateEmployee: async (req, res) => {
         try {
             const idEmploye = req.params.idEmploye; // récupérer le idEmploye du paramètre de la route
             const nom = req.body.nom;
             const email = req.body.email;
             const mdp = req.body.mdp;
-            const pdp = req.body.pdp;
+            const pdp = req.file ? req.file.buffer.toString('base64') : null; // Convertir le fichier en base64
+            
             const horaireDebut = req.body.horaireDebut;
             const horaireFin = req.body.horaireFin;
 
             const mdpHashed = mdp ? await hashPassword(mdp) : undefined;
+            console.log("padp= "+pdp+" mdp= "+mdpHashed);
 
             // Construire l'objet de mise à jour
             let updateObj = {};
@@ -151,7 +177,6 @@ var Emp_authentification = {
     getRdvsByIdEmploye: async (req, res) => {
         try {
             const idEmploye = req.params.idEmploye;
-            console.log("id = " + idEmploye);
             const rdvs = await Rdv.getRdvsByIdEmploye(idEmploye);
             res.status(200).json(rdvs);
         } catch (error) {
@@ -193,8 +218,8 @@ var Emp_authentification = {
     getCommissionByidEmployeeDaily: async (req, res) => {
         try {
             const idEmploye = req.params.idEmploye;
-            const startOfDay = req.body.datedebut ? new Date(req.body.datedebut) : new Date();
-            const endOfDay = new Date(req.body.datefin);
+            const startOfDay = new Date(req.query.datedebut) ? new Date(req.query.datedebut) : new Date();
+            const endOfDay = new Date(req.query.datefin)? new Date(req.query.datedebut) : new Date();
             if (isNaN(startOfDay) || isNaN(endOfDay)) {
                 return res.status(400).send({
                     message: 'Invalid date format'

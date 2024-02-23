@@ -66,12 +66,19 @@ var clientMethods = {
             var _idRdv = 0;
             var idClient = parseInt(req.query.idClient);
             var dateHeureDebut = new Date(req.body.dateHeureDebut);
+            var idEmploye = req.body.idEmploye;
             if (dateHeureDebut.getTime() < new Date().getTime()) {
                 res.status(400).send('Invalid debut date');
                 return;
             }
+            const rdvsEmploye = await RdvModel.find({ idEmploye: idEmploye });
+            for (const rdvEmploye of rdvsEmploye) {
+                if (rdvEmploye.dateHeureDebut <= dateHeureDebut && dateHeureDebut <= rdvEmploye.dateHeureFin) {
+                    res.status(400).send('The employee won\'t be available during that time');
+                    return;
+                }
+            }
             _idRdv = await getNextSequence('rdvs');
-            var idEmploye = req.body.idEmploye;
             var idServices = req.body.idServices.split(",").map(Number);
             const services = await ServiceModel.find({ _idService: { $in: idServices } }).exec();
             var minutes = 0;

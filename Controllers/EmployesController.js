@@ -1,5 +1,6 @@
 require('dotenv').config();
-var EmployeeModel = require('../Model/Employee/EmployeeModel')
+var EmployeeModel = require('../Model/Employee/EmployeeModel');
+var RdvServiceModel = require('../Model/RdvService/RdvServiceModel');
 const getNextSequence = require('../Model/Tools/Counter');
 const Rdv = require('../Model/Rdv/RdvModel');
 const bcrypt = require('bcrypt');
@@ -80,18 +81,18 @@ var Emp_authentification = {
             const nom = req.body.nom;
             const email = req.body.email;
             const mdp = req.body.mdp;
-            const pdp = req.file ? req.file.buffer.toString('base64') : null; // Convertir le fichier en base64
+            const pdp = req.body.pdp; // Convertir le fichier en base64
             
             const horaireDebut = req.body.horaireDebut;
             const horaireFin = req.body.horaireFin;
 
             const mdpHashed = mdp ? await hashPassword(mdp) : undefined;
-            console.log("padp= "+pdp+" mdp= "+mdpHashed);
+            // console.log("padp= "+pdp+" mdp= "+mdpHashed);
 
             // Construire l'objet de mise à jour
             let updateObj = {};
             if (nom) updateObj.nom = nom;
-            if (mdpHashed) updateObj.mdp = mdpHashed;
+            //if (mdpHashed) updateObj.mdp = mdpHashed;
             if (email) updateObj.email = email;
             if (pdp) updateObj.pdp = pdp;
             if (horaireDebut) updateObj.horaireDebut = horaireDebut;
@@ -231,6 +232,30 @@ var Emp_authentification = {
         } catch (error) {
             res.status(500).send({
                 message: error.message
+            });
+        }
+    },
+    getRdvServiceBy_idRdv: async (req, res) => {
+        const idRdv = req.params.idRdv;
+        try {
+           // const employee = await EmployeeModel.findById(id);
+            const rdvService = await RdvServiceModel.find({
+                idRdv: idRdv
+            });
+            if (!rdvService) {
+                return res.status(404).send({
+                    message: "RDV service not found " + idRdv
+                });
+            }
+            res.status(200).send(rdvService);
+        } catch (error) {
+            if(error.kind === 'ObjectId') {
+                return res.status(404).send({
+                    message: "Error Rdv Service not found with id " + idRdv +" error = "+error.message
+                });                
+            }
+            return res.status(500).send({
+                message: "Erreur lors de la récupération de l'employé avec l'id " + idRdv+" error = "+error.message
             });
         }
     }

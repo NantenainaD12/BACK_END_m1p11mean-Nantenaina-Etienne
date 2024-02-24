@@ -140,13 +140,12 @@ var clientMethods = {
     },
     employePreference: async(req, res) => {
         try {
-            var idClient = req.session.client._idClient;
+            var idClient = parseInt(req.query.idClient);
             const counts = await RdvModel.aggregate([{ $match: { idClient: idClient } }, { $group: { _id: "$idEmploye", count: { $sum: 1 } } }, { $sort: { count: -1 } }])
             const employees = [];
             for (const counter of counts) {
                 const employee = await EmployeModel.findOne({ idEmploye: counter._id });
-                employee.countPreference = counter.count;
-                employees.push(employee);
+                employees.push({ 'employe': employee, 'count': counter.count });
             };
             res.status(200).send(employees);
         } catch (error) {
@@ -155,7 +154,7 @@ var clientMethods = {
     },
     servicePreference: async(req, res) => {
         try {
-            var idClient = req.session.client._idClient;
+            var idClient = parseInt(req.query.idClient);
             const idrdvs = await RdvModel.find({ idClient: idClient }, { _id: 0, _idRdv: 1 });
             var idServicesWithCounts = [];
             for (const idrdv of idrdvs) {
@@ -176,8 +175,7 @@ var clientMethods = {
             const services = [];
             for (const counter of sortedCounterResults) {
                 const service = await ServiceModel.findOne({ _idService: counter._id });
-                service.countPreference = counter.count;
-                services.push(service);
+                services.push({ 'service': service, 'count': counter.count });
             };
             res.status(200).send(services);
         } catch (error) {

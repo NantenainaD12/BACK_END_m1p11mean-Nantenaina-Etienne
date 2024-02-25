@@ -5,6 +5,8 @@ const getNextSequence = require('../Model/Tools/Counter');
 const Rdv = require('../Model/Rdv/RdvModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const ServiceModel = require('../Model/Service/ServiceModel');
+const ClientModel = require('../Model/Client/ClientModel');
 
 var Emp_authentification = {
     createEmployee: async (req, res) => {
@@ -54,7 +56,7 @@ var Emp_authentification = {
     getEmployeById: async (req, res) => {
         const id = req.params.idEmploye;
         try {
-           // const employee = await EmployeeModel.findById(id);
+            // const employee = await EmployeeModel.findById(id);
             const employee = await EmployeeModel.find({
                 idEmploye: id
             });
@@ -65,10 +67,10 @@ var Emp_authentification = {
             }
             res.status(200).send(employee);
         } catch (error) {
-            if(error.kind === 'ObjectId') {
+            if (error.kind === 'ObjectId') {
                 return res.status(404).send({
-                    message: "Error Employé non trouvé avec l'id " + id +" error = "+error.message
-                });                
+                    message: "Error Employé non trouvé avec l'id " + id + " error = " + error.message
+                });
             }
             return res.status(500).send({
                 message: "Erreur lors de la récupération de l'employé avec l'id " + id
@@ -82,7 +84,7 @@ var Emp_authentification = {
             const email = req.body.email;
             const mdp = req.body.mdp;
             const pdp = req.body.pdp; // Convertir le fichier en base64
-            
+
             const horaireDebut = req.body.horaireDebut;
             const horaireFin = req.body.horaireFin;
 
@@ -179,7 +181,22 @@ var Emp_authentification = {
         try {
             const idEmploye = req.params.idEmploye;
             const rdvs = await Rdv.getRdvsByIdEmploye(idEmploye);
+
+            // Faire une boucle sur chaque rdv
+            for (let i = 0; i < rdvs.length; i++) {
+                // Obtenir l'employé correspondant
+                const employee = await ClientModel.findOne({
+                    _idClient: parseInt(rdvs[i].idClient)
+                });
+                if (employee) {
+                    // Ajouter le nom de l'employé à rdv
+                    rdvs[i] = rdvs[i].toObject(); // Convertir le document Mongoose en objet JavaScript
+                    rdvs[i].employeeName = employee.nom;
+                }
+            }
+
             res.status(200).json(rdvs);
+
         } catch (error) {
             res.status(500).send({
                 message: error.message
@@ -220,13 +237,27 @@ var Emp_authentification = {
         try {
             const idEmploye = req.params.idEmploye;
             const startOfDay = new Date(req.query.datedebut) ? new Date(req.query.datedebut) : new Date();
-            const endOfDay = new Date(req.query.datefin)? new Date(req.query.datedebut) : new Date();
-            if (isNaN(startOfDay) || isNaN(endOfDay)) {
+            const endOfDay = new Date(req.query.datefin) ? new Date(req.query.datedebut) : new Date();
+            if (isNaN(startOfDay)) {
                 return res.status(400).send({
                     message: 'Invalid date format'
                 });
             }
             const rdvs = await Rdv.getCommissionByidEmployeeDaily(idEmploye, startOfDay, endOfDay);
+
+            // Faire une boucle sur chaque rdv
+            for (let i = 0; i < rdvs.length; i++) {
+                // Obtenir l'employé correspondant
+                const employee = await ClientModel.findOne({
+                    _idClient: parseInt(rdvs[i].idClient)
+                });
+                console.log("cascsa " + rdvs[i].idClient + " employe = " + employee);
+                if (employee) {
+                    // Ajouter le nom de l'employé à rdv
+                    // rdvs[i] = rdvs[i].toObject(); // Convertir le document Mongoose en objet JavaScript
+                    rdvs[i].employeeName = employee.nom;
+                }
+            }
 
             res.status(200).json(rdvs);
         } catch (error) {
@@ -238,27 +269,41 @@ var Emp_authentification = {
     getRdvServiceBy_idRdv: async (req, res) => {
         const idRdv = req.params.idRdv;
         try {
-           // const employee = await EmployeeModel.findById(id);
-            const rdvService = await RdvServiceModel.find({
+            const rdvServices = await RdvServiceModel.find({
                 idRdv: idRdv
             });
-            if (!rdvService) {
+            if (!rdvServices) {
                 return res.status(404).send({
                     message: "RDV service not found " + idRdv
                 });
             }
-            res.status(200).send(rdvService);
+
+            // Faire une boucle sur chaque rdvService
+            for (let i = 0; i < rdvServices.length; i++) {
+                // Obtenir le service correspondant
+                const service = await ServiceModel.findOne({
+                    _idService: rdvServices[i].idService
+                });
+                if (service) {
+                    // Ajouter la description du service à rdvService
+                    rdvServices[i] = rdvServices[i].toObject(); // Convertir le document Mongoose en objet JavaScript
+                    rdvServices[i].serviceDescription = service.description;
+                }
+            }
+
+            res.status(200).send(rdvServices);
         } catch (error) {
-            if(error.kind === 'ObjectId') {
+            if (error.kind === 'ObjectId') {
                 return res.status(404).send({
-                    message: "Error Rdv Service not found with id " + idRdv +" error = "+error.message
-                });                
+                    message: "Error Rdv Service not found with id " + idRdv + " error = " + error.message
+                });
             }
             return res.status(500).send({
-                message: "Erreur lors de la récupération de l'employé avec l'id " + idRdv+" error = "+error.message
+                message: "Erreur lors de la récupération de l'employé avec l'id " + idRdv + " error = " + error.message
             });
         }
     }
+
 
 }
 

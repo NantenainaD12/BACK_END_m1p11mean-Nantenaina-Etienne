@@ -29,13 +29,13 @@ router.route('/Employe/LoginEmployee').post(multer().none(),Con_Emp_auth.Login_E
 router.route('/Employe/updateEmployee/:idEmploye').post(authenticateToken, Con_Emp_auth.updateEmployee);
 router.route('/Employe/GetAllEmployee').get( Con_Emp_auth.GetAllEmployee);
 router.route('/Employe/getEmployeById/:idEmploye').get(authenticateToken, Con_Emp_auth.getEmployeById);
-router.route('/Employe/rdvs/:idEmploye').get(authenticateToken, Con_Emp_auth.getRdvsByIdEmploye);
+router.route('/Employe/rdvs/:idEmploye').get( Con_Emp_auth.getRdvsByIdEmploye);
 router.route('/Employe/rdvs_done_daily/:idEmploye').get(Con_Emp_auth.getRdvsDONEByIdEmploye_groupByDAY);
 router.route('/Employe/rdvs_done_daily_with_commission/:idEmploye').get(Con_Emp_auth.getCommissionByidEmployeeDaily);
 router.route('/Employe/updateEtatFini/:idRdv').put( Con_Emp_auth.updateEtatFini);
 
 ///rdv service
-router.route('/Employe/getRdvServiceBy_idRdv/:idRdv').get(authenticateToken, Con_Emp_auth.getRdvServiceBy_idRdv);
+router.route('/Employe/getRdvServiceBy_idRdv/:idRdv').get(Con_Emp_auth.getRdvServiceBy_idRdv);
 
 
 //Manager

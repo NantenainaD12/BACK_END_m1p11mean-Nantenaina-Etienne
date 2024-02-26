@@ -39,8 +39,11 @@ router.route('/Employe/getRdvServiceBy_idRdv/:idRdv').get(Con_Emp_auth.getRdvSer
 
 
 //Manager
+router.route('/Manager/DeleteOffreSpecial/:idOffreSpeciale').get(ServiceController.DeleteOffreSpecial);
+router.route('/Manager/getOffreSpecialValid').get(ServiceController.getOffreSpecialValid);
 router.route('/Manager/GetAllServices').get(ServiceController.GetAllServices);
 router.route('/Manager/CreateService').post(ServiceController.CreateService);
+router.route('/Manager/CreateOffreSpecial').post(ServiceController.CreateOffreSpecial);
 router.route('/Manager/UpdateService/:idService').post(ServiceController.UpdateService);
 router.route('/Manager/DeleteService/:idService').post(ServiceController.DeleteService);
 

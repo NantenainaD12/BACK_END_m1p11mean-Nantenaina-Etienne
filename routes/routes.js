@@ -40,10 +40,10 @@ router.route('/Employe/getRdvServiceBy_idRdv/:idRdv').get(Con_Emp_auth.getRdvSer
 
 //Manager
 router.route('/Manager/DeleteOffreSpecial/:idOffreSpeciale').get(ServiceController.DeleteOffreSpecial);
-router.route('/Manager/getOffreSpecialValid').get(ServiceController.getOffreSpecialValid);
+router.route('/Manager/getOffreSpecialValid/:idTsyilaina').get(ServiceController.getOffreSpecialValid);
+router.route('/Manager/CreateOffreSpecial').post(ServiceController.CreateOffreSpecial);
 router.route('/Manager/GetAllServices').get(ServiceController.GetAllServices);
 router.route('/Manager/CreateService').post(ServiceController.CreateService);
-router.route('/Manager/CreateOffreSpecial').post(ServiceController.CreateOffreSpecial);
 router.route('/Manager/UpdateService/:idService').post(ServiceController.UpdateService);
 router.route('/Manager/DeleteService/:idService').post(ServiceController.DeleteService);
 
@@ -53,5 +53,13 @@ router.route('/Manager/CoutReservation_By_month').post(StatistiqueController.Cou
 router.route('/Manager/ChiffreAffaireParJour').post(StatistiqueController.ChiffreAffaireParJour);
 router.route('/Manager/ChiffreAffaireParMois').post(StatistiqueController.ChiffreAffaireParMois);
 router.route('/Manager/Get_benfice_monthly').post(StatistiqueController.Get_benfice_monthly);
+
+
+//depense
+
+router.route('/Manager/CreateDepense').post(StatistiqueController.CreateDepense);
+router.route('/Manager/GetDepensemonthly').post(StatistiqueController.GetDepensemonthly);
+
+
 
 module.exports = router;

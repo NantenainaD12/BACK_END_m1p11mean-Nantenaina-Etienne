@@ -122,8 +122,11 @@ var Services_function = {
     },
     getOffreSpecialValid: async (req, res) => {
         try {
-            const dateBegin = new Date(req.body.dateBegin);
-            const dateEnd = new Date(req.body.dateEnd);
+            console.log("ttt "+req.query.dateBegin+" lll "+req.query.dateEnd);
+            
+            const dateBegin = new Date(req.query.dateBegin)  ? new Date(req.query.dateBegin) : new Date();
+            const dateEnd = new Date(req.query.dateEnd)  ? new Date(req.query.dateEnd) : new Date();
+            console.log("uuuu "+dateBegin+" fin "+dateEnd);
             const validOffreSpecials = await OffreSpecialeModel.find({
                 dateDebut: { $lte: dateBegin },
                 dateFin: { $gte: dateEnd }

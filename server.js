@@ -3,7 +3,10 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const cors = require('cors');
 const app = express();
-var routes = require('./routes/routes')
+var routes = require('./routes/routes');
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+
 const mongoose = require('mongoose');
 
 const connectionString = 'mongodb+srv://main_User:qhLOPsf6Judsb33T@cluster0.jol0ctq.mongodb.net/Beauty_Project_Binome?retryWrites=true&w=majority'

@@ -141,6 +141,7 @@ var Emp_authentification = {
         try {
             const email = req.body.email;
             const mdp = req.body.mdp;
+            console.log("email = "+email+" mdp= "+mdp);
 
             const employee = await EmployeeModel.findOne({
                 email: email
@@ -173,7 +174,7 @@ var Emp_authentification = {
         } catch (error) {
             console.error(error);
             return res.status(500).json({
-                message: 'Internal server error'
+                message: 'Internal server error mesage= '+res.message
             });
         }
     },

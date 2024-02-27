@@ -3,7 +3,7 @@ var EmployeeModel = require('../Model/Employee/EmployeeModel');
 var RdvServiceModel = require('../Model/RdvService/RdvServiceModel');
 const getNextSequence = require('../Model/Tools/Counter');
 const Rdv = require('../Model/Rdv/RdvModel');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const ServiceModel = require('../Model/Service/ServiceModel');
 const ClientModel = require('../Model/Client/ClientModel');
@@ -45,6 +45,7 @@ var Emp_authentification = {
     GetAllEmployee: async (req, res) => {
         try {
             const clients = await EmployeeModel.find();
+            console.log(" GET ALL EMPLOYE");
             res.status(200).send(clients);
         } catch (error) {
             res.status(500).send({
@@ -250,7 +251,6 @@ var Emp_authentification = {
                 const employee = await ClientModel.findOne({
                     _idClient: parseInt(rdvs[i].idClient)
                 });
-                console.log("cascsa " + rdvs[i].idClient + " employe = " + employee);
                 if (employee) {
                     // Ajouter le nom de l'employé à rdv
                     // rdvs[i] = rdvs[i].toObject(); // Convertir le document Mongoose en objet JavaScript

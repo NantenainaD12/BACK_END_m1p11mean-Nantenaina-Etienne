@@ -39,7 +39,8 @@ rdvFields.statics.getRdvsByIdEmploye = async function (idEmploye) {
     try {
         const response = await this.find({
             idEmploye: idEmploye,
-            etatFini: false
+            etatFini: false,
+            datePayement: { $exists: true } // Ajoutez cette condition
         });
         return response;
     } catch (error) {

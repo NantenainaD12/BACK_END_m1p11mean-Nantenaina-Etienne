@@ -211,7 +211,7 @@ var clientMethods = {
         try {
             const idRdv = parseInt(req.query.idRdv);
             now = new Date();
-            await RdvModel.updateOne({ _idRdv: idRdv }, { $set: { datePayement: now } });
+            await RdvModel.updateOne({ _idRdv: idRdv }, { $set: { etatFini: false, datePayement: now } });
             const rdv = await RdvModel.find({ _idRdv: idRdv });
             res.status(200).send(rdv);
         } catch (error) {

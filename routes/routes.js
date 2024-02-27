@@ -50,7 +50,7 @@ router.route('/Manager/CreateService').post(ServiceController.CreateService);
 router.route('/Manager/UpdateService/:idService').post(ServiceController.UpdateService);
 router.route('/Manager/DeleteService/:idService').post(ServiceController.DeleteService);
 
-//Manager Statistiques
+//Manager Statistiqcues
 router.route('/Manager/CoutReservation_Day_month').post(StatistiqueController.CoutReservation_Day_month);
 router.route('/Manager/CoutReservation_By_month').post(StatistiqueController.CoutReservation_By_month);
 router.route('/Manager/ChiffreAffaireParJour').post(StatistiqueController.ChiffreAffaireParJour);

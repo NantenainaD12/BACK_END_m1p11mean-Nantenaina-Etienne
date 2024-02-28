@@ -2,6 +2,7 @@ require('dotenv').config();
 var EmployeeModel = require('../Model/Employee/EmployeeModel')
 var ServiceModel = require('../Model/Service/ServiceModel')
 const mongoose = require('mongoose');
+const getNextSequence = require('../Model/Tools/Counter');
 const DepenseModel = require('../Model/Depenses/DepenseModel');
 
 
@@ -139,6 +140,7 @@ var StatistiqueFields = {
 
             const depense = new DepenseModel();
             depense._id = description+montant;
+            depense.idDepense = await getNextSequence('Depense');
             depense.description = description;
             depense.montant = montant;
             depense.dateDepense = new Date(datedepense);
@@ -171,9 +173,27 @@ var StatistiqueFields = {
             console.error(error);
             res.status(500).send('Erreur du serveur');
         }
+    },
+    DeleteDepenseById: async (req, res) => {
+        try {
+            const id = req.params.id;
+    
+            const depense = await DepenseModel.findOne({ idDepense: id }); 
+            console.log("id= "+id+"value "+depense);
+    
+            if (!depense) {
+                return res.status(404).send({ message: 'Depense not found' });
+            }
+    
+            await DepenseModel.deleteOne({ idDepense: id });
+    
+            res.status(200).send({ message: 'Depense deleted successfully' });
+        } catch (error) {
+            console.log(error);
+            res.status(500).send(error);
+        }
     }
     
-
 }
 
 

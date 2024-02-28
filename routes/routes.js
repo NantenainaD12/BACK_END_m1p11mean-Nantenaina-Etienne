@@ -62,7 +62,6 @@ router.route('/Manager/Get_benfice_monthly').post(StatistiqueController.Get_benf
 
 router.route('/Manager/CreateDepense').post(StatistiqueController.CreateDepense);
 router.route('/Manager/GetDepensemonthly').post(StatistiqueController.GetDepensemonthly);
-
-
+router.route('/Manager/DeleteDepense/:id').delete(StatistiqueController.DeleteDepenseById);
 
 module.exports = router;

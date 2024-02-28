@@ -6,6 +6,10 @@ var DepenseFields = new Schema({
         type: String,
         required: true
     },
+    idDepense: {
+        type: Number,
+        required: true
+    },
     description: {
         type: String,
         required: true

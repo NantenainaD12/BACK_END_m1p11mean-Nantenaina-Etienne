@@ -11,6 +11,10 @@ var serviceFields = new Schema({
         type: String,
         required: true
     },
+    Photo: {
+        type: String,
+        required: true
+    },
     dureeMinute: {
         type: Number,
         required: true

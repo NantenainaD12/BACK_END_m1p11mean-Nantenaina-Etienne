@@ -8,9 +8,11 @@ const getNextSequence = require('../Model/Tools/Counter');
 var Services_function = {
     CreateService: async (req, res) => {
         try {
+            console.log("req.body.Photo = "+req.body.Photo);
             const newService = new ServiceModel({
                 _idService: await getNextSequence('services'),
                 description: req.body.description,
+                Photo: req.body.Photo,
                 dureeMinute: req.body.dureeMinute,
                 prix: req.body.prix,
                 commission: req.body.commission

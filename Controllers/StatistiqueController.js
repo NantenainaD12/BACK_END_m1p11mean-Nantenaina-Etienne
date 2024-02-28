@@ -212,6 +212,18 @@ var StatistiqueFields = {
             // Utilisez le modèle v_moyenneHeureEmploye pour rechercher les données
             const v_moyenneHeureEmploye = mongoose.model('v_moyenneHeureEmploye');
             const results = await v_moyenneHeureEmploye.find({});
+            for (let i = 0; i < results.length; i++) {
+                const idEmploye = results[i].idEmploye;
+            
+                // Find the corresponding employee
+                const employee = await EmployeeModel.findOne({ idEmploye: idEmploye });
+            
+                if (employee) {
+                    // Add the employee name to the result
+                    results[i] = results[i].toObject(); // Convert the Mongoose document to a plain JavaScript object
+                    results[i].employeeName = employee.nom;
+                }
+            }
 
             if (results) {
                 // Renvoyez les résultats au format JSON

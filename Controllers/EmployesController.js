@@ -158,7 +158,7 @@ var Emp_authentification = {
                 });
             }
 
-            // Authentification réussie
+            // Authentification réussie process.env.SECRET_KEY;
             const secret_key = "2439e411506396bd15aa959f1ab09eaf2efa2d8d17dea832bdcafaba98a8da5d";
             const token = jwt.sign({
                 id: employee._id

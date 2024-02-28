@@ -56,6 +56,7 @@ router.route('/Manager/CoutReservation_By_month').post(StatistiqueController.Cou
 router.route('/Manager/ChiffreAffaireParJour').post(StatistiqueController.ChiffreAffaireParJour);
 router.route('/Manager/ChiffreAffaireParMois').post(StatistiqueController.ChiffreAffaireParMois);
 router.route('/Manager/Get_benfice_monthly').post(StatistiqueController.Get_benfice_monthly);
+router.route('/Manager/Get_moyenneHeureEmploye').get(StatistiqueController.Get_moyenneHeureEmploye);
 
 
 //depense

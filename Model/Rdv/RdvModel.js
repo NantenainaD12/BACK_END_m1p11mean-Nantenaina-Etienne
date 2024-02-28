@@ -146,6 +146,7 @@ mongoose.model('v_ReservationParMois', EmptySchema, 'v_ReservationParMois');
 mongoose.model('v_ChiffreAffaireParMois', EmptySchema, 'v_ChiffreAffaireParMois');
 mongoose.model('v_ChiffreAffaireParJour', EmptySchema, 'v_ChiffreAffaireParJour');
 mongoose.model('v_DepenseParMois', EmptySchema, 'v_DepenseParMois');
+mongoose.model('v_moyenneHeureEmploye', EmptySchema, 'v_moyenneHeureEmploye');
 
 
 

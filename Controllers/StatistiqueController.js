@@ -139,13 +139,13 @@ var StatistiqueFields = {
             console.log(datedepense);
 
             const depense = new DepenseModel();
-            depense._id = description+montant;
+            depense._id = description + montant;
             depense.idDepense = await getNextSequence('Depense');
             depense.description = description;
             depense.montant = montant;
             depense.dateDepense = new Date(datedepense);
 
-            const savedOffreSpecial =   await depense.save();
+            const savedOffreSpecial = await depense.save();
 
             res.status(201).send(savedOffreSpecial);
         } catch (error) {
@@ -157,15 +157,18 @@ var StatistiqueFields = {
         try {
             const mois = parseInt(req.body.mois);
             const annee = new Date().getFullYear(); // Obtenez l'année en cours
-    
+
             // Créez les dates de début et de fin du mois
             const dateDebut = new Date(annee, mois - 1, 1);
             const dateFin = new Date(annee, mois, 0, 23, 59, 59);
-    
+
             const result = await DepenseModel.find({
-                dateDepense: { $gte: dateDebut, $lte: dateFin }
+                dateDepense: {
+                    $gte: dateDebut,
+                    $lte: dateFin
+                }
             });
-    
+
             if (result) {
                 res.json(result);
             }
@@ -177,23 +180,54 @@ var StatistiqueFields = {
     DeleteDepenseById: async (req, res) => {
         try {
             const id = req.params.id;
-    
-            const depense = await DepenseModel.findOne({ idDepense: id }); 
-            console.log("id= "+id+"value "+depense);
-    
+
+            const depense = await DepenseModel.findOne({
+                idDepense: id
+            });
+            console.log("id= " + id + "value " + depense);
+
             if (!depense) {
-                return res.status(404).send({ message: 'Depense not found' });
+                return res.status(404).send({
+                    message: 'Depense not found'
+                });
             }
-    
-            await DepenseModel.deleteOne({ idDepense: id });
-    
-            res.status(200).send({ message: 'Depense deleted successfully' });
+
+            await DepenseModel.deleteOne({
+                idDepense: id
+            });
+
+            res.status(200).send({
+                message: 'Depense deleted successfully'
+            });
         } catch (error) {
             console.log(error);
             res.status(500).send(error);
         }
+    },
+    Get_moyenneHeureEmploye: async (req, res) => {
+        try {
+            // Récupérez le mois depuis la requête (assurez-vous que req.body.mois est correctement défini)
+            const mois = parseInt(req.body.mois);
+
+            // Utilisez le modèle v_moyenneHeureEmploye pour rechercher les données
+            const v_moyenneHeureEmploye = mongoose.model('v_moyenneHeureEmploye');
+            const results = await v_moyenneHeureEmploye.find({});
+
+            if (results) {
+                // Renvoyez les résultats au format JSON
+                res.json(results);
+            } else {
+                res.status(404).json({
+                    message: 'Aucune donnée trouvée dans la vue v_moyenneHeureEmploye.'
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({
+                message: 'Une erreur est survenue lors de la recherche des données.'
+            });
+        }
     }
-    
 }
 
 

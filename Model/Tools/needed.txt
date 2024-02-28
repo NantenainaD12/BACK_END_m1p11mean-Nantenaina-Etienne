@@ -352,4 +352,44 @@ db.createView(
 )
 
 
+/// Minute extarct 
 
+db.createView("v_RdvToMinute", "rdvs", [
+  {
+    $project: {
+      idRdv: 1,
+      idEmploye: 1,
+      diffrenceEnMinute: {
+        $divide: [
+          { $subtract: ["$dateHeureFin", "$dateHeureDebut"] },
+          60000 // Conversion de millisecondes en minutes
+        ]
+      }
+    }
+  }
+]);
+
+db.v_RdvToMinute.drop()
+
+db.v_RdvToMinute.find();
+
+
+/// Moyen temps travail
+
+db.createView("v_moyenneHeureEmploye", "v_RdvToMinute", [
+  {
+    $group: {
+      _id: "$idEmploye",
+      count: { $sum: 1 },
+      totalMinutes: { $sum: "$diffrenceEnMinute" }
+    }
+  },
+  {
+    $project: {
+      idEmploye: "$_id",
+      count: 1,
+      totalMinutes: 1,
+      moyenneMinutes: { $divide: ["$totalMinutes", "$count"] }
+    }
+  }
+]);

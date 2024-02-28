@@ -130,8 +130,8 @@ var Services_function = {
             const dateEnd = new Date(req.query.dateEnd)  ? new Date(req.query.dateEnd) : new Date();
             console.log("uuuu "+dateBegin+" fin "+dateEnd);
             const validOffreSpecials = await OffreSpecialeModel.find({
-                dateDebut: { $lte: dateBegin },
-                dateFin: { $gte: dateEnd }
+                dateFin: { $lte: dateEnd },
+                dateFin: { $gte: dateBegin }
             });
     
             if (!validOffreSpecials.length) {
